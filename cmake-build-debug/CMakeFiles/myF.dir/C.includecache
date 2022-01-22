@@ -590,6 +590,14 @@ close_code.h
 
 ../sdl2/sdl2-include/close_code.h
 
+C:/Users/PoriaKP/CLionProjects/myF/src/graphic.h
+SDL.h
+-
+SDL2_gfxPrimitives.h
+-
+main.h
+C:/Users/PoriaKP/CLionProjects/myF/src/main.h
+
 C:/Users/PoriaKP/CLionProjects/myF/src/main.c
 SDL.h
 -
@@ -603,6 +611,8 @@ main.h
 C:/Users/PoriaKP/CLionProjects/myF/src/main.h
 math.h
 C:/Users/PoriaKP/CLionProjects/myF/src/math.h
+graphic.h
+C:/Users/PoriaKP/CLionProjects/myF/src/graphic.h
 
 C:/Users/PoriaKP/CLionProjects/myF/src/main.h
 SDL_quit.h

@@ -49,6 +49,8 @@ CMakeFiles/myF.dir/src/graphic.c.obj
  ../sdl2/sdl2-include/close_code.h
  C:/Users/PoriaKP/CLionProjects/myF/src/graphic.c
  C:/Users/PoriaKP/CLionProjects/myF/src/graphic.h
+ C:/Users/PoriaKP/CLionProjects/myF/src/main.h
+ C:/Users/PoriaKP/CLionProjects/myF/src/math.h
 CMakeFiles/myF.dir/src/main.c.obj
  ../sdl2/sdl2-gfx-include/SDL2_gfxPrimitives.h
  ../sdl2/sdl2-include/SDL.h
@@ -95,6 +97,7 @@ CMakeFiles/myF.dir/src/main.c.obj
  ../sdl2/sdl2-include/SDL_video.h
  ../sdl2/sdl2-include/begin_code.h
  ../sdl2/sdl2-include/close_code.h
+ C:/Users/PoriaKP/CLionProjects/myF/src/graphic.h
  C:/Users/PoriaKP/CLionProjects/myF/src/main.c
  C:/Users/PoriaKP/CLionProjects/myF/src/main.h
  C:/Users/PoriaKP/CLionProjects/myF/src/math.h

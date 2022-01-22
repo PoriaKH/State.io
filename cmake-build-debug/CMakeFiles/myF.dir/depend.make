@@ -48,6 +48,8 @@ CMakeFiles/myF.dir/src/graphic.c.obj: ../sdl2/sdl2-include/begin_code.h
 CMakeFiles/myF.dir/src/graphic.c.obj: ../sdl2/sdl2-include/close_code.h
 CMakeFiles/myF.dir/src/graphic.c.obj: ../src/graphic.c
 CMakeFiles/myF.dir/src/graphic.c.obj: ../src/graphic.h
+CMakeFiles/myF.dir/src/graphic.c.obj: ../src/main.h
+CMakeFiles/myF.dir/src/graphic.c.obj: ../src/math.h
 
 CMakeFiles/myF.dir/src/main.c.obj: ../sdl2/sdl2-gfx-include/SDL2_gfxPrimitives.h
 CMakeFiles/myF.dir/src/main.c.obj: ../sdl2/sdl2-include/SDL.h
@@ -94,6 +96,7 @@ CMakeFiles/myF.dir/src/main.c.obj: ../sdl2/sdl2-include/SDL_version.h
 CMakeFiles/myF.dir/src/main.c.obj: ../sdl2/sdl2-include/SDL_video.h
 CMakeFiles/myF.dir/src/main.c.obj: ../sdl2/sdl2-include/begin_code.h
 CMakeFiles/myF.dir/src/main.c.obj: ../sdl2/sdl2-include/close_code.h
+CMakeFiles/myF.dir/src/main.c.obj: ../src/graphic.h
 CMakeFiles/myF.dir/src/main.c.obj: ../src/main.c
 CMakeFiles/myF.dir/src/main.c.obj: ../src/main.h
 CMakeFiles/myF.dir/src/main.c.obj: ../src/math.h

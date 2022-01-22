@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 #include "main.h"
-
+#include <math.h>
 void sort(int a[],int n)
 {
     for(int i=0;i<n;i++)
@@ -23,4 +23,12 @@ void sort(int a[],int n)
 Sint16 avg(Sint16 a,Sint16 b)
 {
     return (a+b)/2;
+}
+
+double len_cal(Sint16 x1,Sint16 x2,Sint16 y1,Sint16 y2)
+{
+    double d_x = x1 - x2;
+    double d_y = y1 - y2;
+    double d_d = (d_x * d_x) + (d_y * d_y) ;
+    return sqrt(d_d);
 }

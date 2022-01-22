@@ -6,6 +6,8 @@
 #define MYF_MAIN_H
 #define MAX_TILES 35
 #include <SDL_quit.h>
+extern int NUM_OF_TILES_FOR_EACH_MAP;
+extern const int cubes_r;
 
 typedef struct tile{
     int width;
