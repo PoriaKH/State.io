@@ -25,7 +25,7 @@
   <component name="ProjectId" id="23muBlKVkGULu4L2G8lQsIhcjrR" />
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$USER_HOME$/Desktop/State.io" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
   <component name="RunDashboard">
@@ -62,6 +62,7 @@
       <workItem from="1642604397756" duration="14934000" />
       <workItem from="1642695532470" duration="8198000" />
       <workItem from="1642764174894" duration="25340000" />
+      <workItem from="1642938278425" duration="17266000" />
     </task>
     <servers />
   </component>

@@ -17,16 +17,32 @@ const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 800;
 const int FPS = 60;
 const int NUM_OF_MAPS = 3;
-const int min_of_map_tiles_counter = 5;
 const int min_width_of_tile = 70;
 const int min_height_of_tile = 70;
 const int cubes_r = 20;
 const int soldiers_r = 4;
 const int soldiers_speed = 2;
+const int NUM_OF_PLAYERS = 2;
+const int FIRST_NUM_OF_SOLDIERS = 10;
+const int FIRST_NUM_OF_SOLDIERS_TEAM_0 = 15;
 
+const int NUM_OF_SOLDIERS = 30;
+int NUM_OF_TILES_FOR_EACH_MAP;
 
-const int NUM_OF_SOLDIERS = 10;
-int NUM_OF_TILES_FOR_EACH_MAP = 5;
+Uint32 b_color1 = 0xaa800000;             //blue
+Uint32 c_color1 = 0xFFA50011;
+
+Uint32 b_color2 = 0xff000099;             //red
+Uint32 c_color2 = 0xff0000ff;
+
+Uint32 b_color3 = 0xFFEF00bb;             //pink
+Uint32 c_color3= 0xFFEF00ff;
+
+Uint32 b_color4 = 0x9100FFdd;             //yellow
+Uint32 c_color4 = 0xE21ADBff;
+
+Uint32 b_color_team_0 = 0x526D6Faa;
+Uint32 c_color_team_0 = 0x526D6Fcc;
 
 void fix(tile* c)
 {
@@ -43,6 +59,9 @@ void clean(map* c,int num)
         c->tiles[i].y1=0;
         c->tiles[i].x1=0;
         c->tiles[i].x2=0;
+        c->tiles[i].y_o=0;
+        c->tiles[i].x_o=0;
+        c->tiles[i].r=0;
     }
 }
 void second_check(tile* c)
@@ -54,6 +73,217 @@ void second_check(tile* c)
         c->x2 = SCREEN_HEIGHT;
 
 }
+void initialize_teams(map* c)
+{
+    if(NUM_OF_PLAYERS == 2){
+        //blue, red
+        //NUM_OF_TILES_FOR_EACH_MAP = 8
+        int n1 = rand() % 7 + 1;
+        int n2 = rand() % 7 + 1;
+        while(n1 == n2){
+            n2 = rand() % 7 + 1;
+        }
+        c->tiles[n1].team = 1;
+        c->tiles[n1].b_color = b_color1;
+        c->tiles[n1].c_color = c_color1;
+        c->tiles[n1].soldiers = FIRST_NUM_OF_SOLDIERS;
+
+
+        c->tiles[n2].team = 1;
+        c->tiles[n2].b_color = b_color1;
+        c->tiles[n2].c_color = c_color1;
+        c->tiles[n2].soldiers = FIRST_NUM_OF_SOLDIERS;
+
+        int n3 = rand() % 7 + 1;
+        while(n3 == n1 || n3 == n2){
+            n3 = rand() % 7 + 1;
+        }
+        int n4 = rand() % 7 + 1;
+        while(n4 == n3 || n4 == n2 || n4 == n1){
+            n4 = rand() % 7 + 1;
+        }
+
+        c->tiles[n3].team = 2;
+        c->tiles[n3].b_color = b_color2;
+        c->tiles[n3].c_color = c_color2;
+        c->tiles[n3].soldiers = FIRST_NUM_OF_SOLDIERS;
+
+        c->tiles[n4].team = 2;
+        c->tiles[n4].b_color = b_color2;
+        c->tiles[n4].c_color = c_color2;
+        c->tiles[n4].soldiers = FIRST_NUM_OF_SOLDIERS;
+
+        int n5 = rand() % 7 + 1;
+        while(n5 == n4 || n5 == n3 || n5 == n2 || n5 == n1){
+            n5 = rand() % 7 + 1;
+        }
+        int n6 = rand() % 7 + 1;
+        while(n6 == n5 || n6 == n4 || n6 == n3 || n6 == n2 || n6 == n1){
+            n6 = rand() % 7 + 1;
+        }
+        int i = 1;
+        for(;i < NUM_OF_TILES_FOR_EACH_MAP ; i++){
+            if(i != n1 && i != n2 && i != n3 && i != n4 && i != n5 && i != n6)
+                break;
+        }
+        int n7 = i;
+
+        c->tiles[n5].team = 0;
+        c->tiles[n5].b_color = b_color_team_0;
+        c->tiles[n5].c_color = c_color_team_0;
+        c->tiles[n5].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+
+        c->tiles[n6].team = 0;
+        c->tiles[n6].b_color = b_color_team_0;
+        c->tiles[n6].c_color = c_color_team_0;
+        c->tiles[n6].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+
+        c->tiles[n7].team = 0;
+        c->tiles[n7].b_color = b_color_team_0;
+        c->tiles[n7].c_color = c_color_team_0;
+        c->tiles[n7].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+    }
+    if(NUM_OF_PLAYERS == 3){
+        //blue, red and pink
+        //NUM_OF_TILES_FOR_EACH_MAP = 8
+        int n1 = rand() % 7 + 1;
+        int n2 = rand() % 7 + 1;
+        int n3 = rand() % 7 + 1;
+        while(n1 == n2){
+            n2 = rand() % 7 + 1;
+        }
+        while(n3 == n1 || n3 == n2){
+            n3 = rand() % 7 + 1;
+        }
+        c->tiles[n1].team = 1;
+        c->tiles[n1].b_color = b_color1;
+        c->tiles[n1].c_color = c_color1;
+        c->tiles[n1].soldiers = FIRST_NUM_OF_SOLDIERS;
+
+        c->tiles[n2].team = 2;
+        c->tiles[n2].b_color = b_color2;
+        c->tiles[n2].c_color = c_color2;
+        c->tiles[n2].soldiers = FIRST_NUM_OF_SOLDIERS;
+
+        c->tiles[n3].team = 3;
+        c->tiles[n3].b_color = b_color3;
+        c->tiles[n3].c_color = c_color3;
+        c->tiles[n3].soldiers = FIRST_NUM_OF_SOLDIERS;
+
+        int n4 = rand() % 7 + 1;
+        while(n4 == n3 || n4 == n2 || n4 == n1){
+            n4 = rand() % 7 + 1;
+        }
+        int n5 = rand() % 7 + 1;
+        while(n5 == n4 || n5 == n3 || n5 == n2 || n5 == n1){
+            n5 = rand() % 7 + 1;
+        }
+        int n6 = rand() % 7 + 1;
+        while(n6 == n5 || n6 == n4 || n6 == n3 || n6 == n2 || n6 == n1){
+            n6 = rand() % 7 + 1;
+        }
+        int i = 1;
+        for(;i < NUM_OF_TILES_FOR_EACH_MAP ; i++){
+            if(i != n1 && i!= n2 && i != n3 && i != n4 && i != n5 && i != n6)
+                break;
+        }
+        int n7 = i;
+        c->tiles[n4].team = 0;
+        c->tiles[n4].b_color = b_color_team_0;
+        c->tiles[n4].c_color = c_color_team_0;
+        c->tiles[n4].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+
+        c->tiles[n5].team = 0;
+        c->tiles[n5].b_color = b_color_team_0;
+        c->tiles[n5].c_color = c_color_team_0;
+        c->tiles[n5].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+
+        c->tiles[n6].team = 0;
+        c->tiles[n6].b_color = b_color_team_0;
+        c->tiles[n6].c_color = c_color_team_0;
+        c->tiles[n6].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+
+        c->tiles[n7].team = 0;
+        c->tiles[n7].b_color = b_color_team_0;
+        c->tiles[n7].c_color = c_color_team_0;
+        c->tiles[n7].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+    }
+    if(NUM_OF_PLAYERS == 4){
+        //blue, red, pink and yellow
+        //NUM_OF_TILES_FOR_EACH_MAP = 9
+        int n1 = rand() % 7 + 1;
+        int n2 = rand() % 7 + 1;
+        int n3 = rand() % 7 + 1;
+        int n4 = rand() % 7 + 1;
+        while(n1 == n2){
+            n2 = rand() % 7 + 1;
+        }
+        while(n3 == n1 || n3 == n2){
+            n3 = rand() % 7 + 1;
+        }
+        while(n4 == n3 || n4 == n2 || n4 == n1){
+            n4 = rand() % 7 + 1;
+        }
+        c->tiles[n1].team = 1;
+        c->tiles[n1].b_color = b_color1;
+        c->tiles[n1].c_color = c_color1;
+        c->tiles[n1].soldiers = FIRST_NUM_OF_SOLDIERS;
+
+        c->tiles[n2].team = 2;
+        c->tiles[n2].b_color = b_color2;
+        c->tiles[n2].c_color = c_color2;
+        c->tiles[n2].soldiers = FIRST_NUM_OF_SOLDIERS;
+
+        c->tiles[n3].team = 3;
+        c->tiles[n3].b_color = b_color3;
+        c->tiles[n3].c_color = c_color3;
+        c->tiles[n3].soldiers = FIRST_NUM_OF_SOLDIERS;
+
+        c->tiles[n4].team = 4;
+        c->tiles[n4].b_color = b_color4;
+        c->tiles[n4].c_color = c_color4;
+        c->tiles[n4].soldiers = FIRST_NUM_OF_SOLDIERS;
+
+        int n5 = rand() % 7 + 1;
+        int n6 = rand() % 7 + 1;
+        int n7 = rand() % 7 + 1;
+        int n8 = rand() % 7 + 1;
+        while(n5 == n4 || n5 == n3 || n5 == n2 || n5 == n1){
+            n5 = rand() % 7 + 1;
+        }
+        while(n6 == n5 || n6 == n4 || n6 == n3 || n6 == n2 || n6 == n1){
+            n6 = rand() % 7 + 1;
+        }
+        while(n7 == n6 || n7 == n5 || n7 == n4 || n7 == n3 || n7 == n2 || n7 == n1){
+            n7 = rand() % 7 + 1;
+        }
+        int i = 1;
+        for(;i < NUM_OF_TILES_FOR_EACH_MAP ; i++){
+            if(i != n7 && i != n6 && i != n5 && i != n4 && i != n3 && i != n2 && i != n1)
+                break;
+        }
+        n8 = i;
+        c->tiles[n5].team = 0;
+        c->tiles[n5].b_color = b_color_team_0;
+        c->tiles[n5].c_color = c_color_team_0;
+        c->tiles[n5].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+
+        c->tiles[n6].team = 0;
+        c->tiles[n6].b_color = b_color_team_0;
+        c->tiles[n6].c_color = c_color_team_0;
+        c->tiles[n6].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+
+        c->tiles[n7].team = 0;
+        c->tiles[n7].b_color = b_color_team_0;
+        c->tiles[n7].c_color = c_color_team_0;
+        c->tiles[n7].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+
+        c->tiles[n8].team = 0;
+        c->tiles[n8].b_color = b_color_team_0;
+        c->tiles[n8].c_color = c_color_team_0;
+        c->tiles[n8].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+    }
+}
 int main()
 {
     // <----> Height
@@ -61,6 +291,16 @@ int main()
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         return 0;
+    }
+
+    if(NUM_OF_PLAYERS == 2){
+        NUM_OF_TILES_FOR_EACH_MAP = 8;
+    }
+    if(NUM_OF_PLAYERS == 3){
+        NUM_OF_TILES_FOR_EACH_MAP = 8;
+    }
+    if(NUM_OF_PLAYERS == 4){
+        NUM_OF_TILES_FOR_EACH_MAP = 9;
     }
 
 //create map
@@ -121,7 +361,6 @@ int main()
         int base_width = 0;
         int base_height = 0;
 
-
         for (int i = 0; i <= x_lines; i++) {
             for (int j = 0; j <= y_lines; j++) {
                 tile new;
@@ -162,7 +401,7 @@ int main()
 ////fixing the values
                 tile* c = &tls[counter];
                 fix(c);
-                if(tls[counter].height >=min_height_of_tile && tls[counter].width >= min_width_of_tile)
+                if(tls[counter].height >= min_height_of_tile && tls[counter].width >= min_width_of_tile)
                 {
                     tile* c = &tls[counter];
                     second_check(c);
@@ -177,7 +416,7 @@ int main()
             base_width = y[i];
 
         }
-        if(map_tiles_counter < min_of_map_tiles_counter)
+        if(map_tiles_counter < NUM_OF_TILES_FOR_EACH_MAP)
         {
             map* c = &mps[k];
             clean(c,map_tiles_counter);
@@ -186,6 +425,10 @@ int main()
             continue;
         }
     }
+
+
+    map* c = &mps[0];
+    initialize_teams(c);
 
 
 
@@ -215,15 +458,15 @@ int main()
         Uint32 color3 = 0xffffff02;
         Uint32 color4 = 0xfff0f000;
 
-        for (int i = 0; i < NUM_OF_TILES_FOR_EACH_MAP; i++)
-        {
-                boxColor(sdlRenderer, mps[0].tiles[i].x1, mps[0].tiles[i].y1, mps[0].tiles[i].x2, mps[0].tiles[i].y2, color4);
-                //printf("x1=%d  x2=%d  y1=%d  y2=%d\n",mps[0].tiles[i].x1,mps[0].tiles[i].x2,mps[0].tiles[i].y1,mps[0].tiles[i].y2);
+
+            for (int i = 1; i < NUM_OF_TILES_FOR_EACH_MAP; i++) {
+                //printf("i=%d\nx1=%d  y1=%d  x2=%d  y2=%d\n",i,mps[0].tiles[i].x1,mps[0].tiles[i].y1,mps[0].tiles[i].x2,mps[0].tiles[i].y2);
+                boxColor(sdlRenderer, mps[0].tiles[i].x1, mps[0].tiles[i].y1, mps[0].tiles[i].x2, mps[0].tiles[i].y2,mps[0].tiles[i].b_color);
 
                 Uint32 color21 = 0xff0000ff;
-                filledCircleColor(sdlRenderer,mps[0].tiles[i].x_o,mps[0].tiles[i].y_o, cubes_r, color21);
-        }
-
+                //printf("x_o=%d  y_o=%d\n\n",mps[0].tiles[i].x_o,mps[0].tiles[i].y_o);
+                filledCircleColor(sdlRenderer, mps[0].tiles[i].x_o, mps[0].tiles[i].y_o, cubes_r, mps[0].tiles[i].c_color);
+            }
 
         if(final_flag == 0)
             SDL_RenderPresent(sdlRenderer);
@@ -256,17 +499,17 @@ int main()
                     y_soldiers[i] = mps[0].tiles[start].y_o;
                 }
             }
-            printf("x1=%d  y1=%d  x2=%d  y2=%d\n",mps[0].tiles[start].x_o,mps[0].tiles[start].y_o,mps[0].tiles[end].x_o,mps[0].tiles[end].y_o);
+            ////printf("x1=%d  y1=%d  x2=%d  y2=%d\n",mps[0].tiles[start].x_o,mps[0].tiles[start].y_o,mps[0].tiles[end].x_o,mps[0].tiles[end].y_o);
             Uint32 color21 = 0xff0000ff;
             Uint32 color4 = 0xfff0f000;
             Uint32 color1 = 0xff000000;
             //printf("x_soldiers=%d   y_soldiers=%d\n",x_soldiers,y_soldiers);
 
             double len = len_cal(mps[0].tiles[start].x_o,mps[0].tiles[end].x_o,mps[0].tiles[start].y_o,mps[0].tiles[end].y_o);
-            printf("len =%lf\n",len);
+            ////printf("len =%lf\n",len);
             double V_x = (double)soldiers_speed * (mps[0].tiles[end].x_o - mps[0].tiles[start].x_o) / len;
             double V_y = (double)soldiers_speed * (mps[0].tiles[end].y_o - mps[0].tiles[start].y_o) / len;
-            printf("V_x=%lf  V_y=%lf\n",V_x,V_y);
+            ////printf("V_x=%lf  V_y=%lf\n",V_x,V_y);
             if(final_flag3 == 1) {
                 for (int i = 0; i < NUM_OF_SOLDIERS; i++) {
                     for (int j = 0; j <= i; j++) {
@@ -281,8 +524,14 @@ int main()
                         y_soldiers[j] += V_y;
 
                     }
-                    for (int j = 0; j <= i; j++) {
-                        filledCircleColor(sdlRenderer, x_soldiers[j], y_soldiers[j], soldiers_r, color1);
+                    for (int j = j_backup; j <= i; j++) {
+                        bool arrived_0 = is_arrived(x_soldiers[j],y_soldiers[j],mps[0].tiles[end]);
+
+                        if(arrived_0)
+                            j_backup = j + 1;
+
+                        if(!arrived_0)
+                            filledCircleColor(sdlRenderer, x_soldiers[j], y_soldiers[j], soldiers_r, mps[0].tiles[start].c_color);
                     }
                     SDL_RenderPresent(sdlRenderer);
 
@@ -303,7 +552,7 @@ int main()
                     }
 
                     if(!arrived)
-                        filledCircleColor(sdlRenderer, x_soldiers[j], y_soldiers[j], soldiers_r, color1);
+                        filledCircleColor(sdlRenderer, x_soldiers[j], y_soldiers[j], soldiers_r, mps[0].tiles[start].c_color);
 
                     else if(j == NUM_OF_SOLDIERS - 1){
                         final_flag = 0;

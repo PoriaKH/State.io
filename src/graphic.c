@@ -42,7 +42,7 @@ int click (SDL_Event event){
 }
 int is_valid_start(map mps){
     int flag1 = -1;
-    for(int i = 0; i < NUM_OF_TILES_FOR_EACH_MAP; i++)
+    for(int i = 1; i <= NUM_OF_TILES_FOR_EACH_MAP; i++)
     {
         if(x0_click <= mps.tiles[i].x2 && x0_click >= mps.tiles[i].x1 && y0_click <= mps.tiles[i].y2 && y0_click >= mps.tiles[i].y1)
         {
@@ -54,7 +54,7 @@ int is_valid_start(map mps){
 }
 int is_valid_end(map mps){
     int flag2 = -1;
-    for(int j = 0; j < NUM_OF_TILES_FOR_EACH_MAP; j++)
+    for(int j = 1; j <= NUM_OF_TILES_FOR_EACH_MAP; j++)
     {
         if(x1_click <= mps.tiles[j].x2 && x1_click >= mps.tiles[j].x1 && y1_click <= mps.tiles[j].y2 && y1_click >= mps.tiles[j].y1)
         {

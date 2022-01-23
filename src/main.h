@@ -14,10 +14,12 @@ typedef struct tile{
     int height;
     Sint16 x1,x2;
     Sint16 y1,y2;
-    Uint32 color;
+    Uint32 b_color;
+    Uint32 c_color;
     Sint16 x_o,y_o;
     Sint16 r;
     int team;
+    int soldiers;
 }tile;
 typedef struct map{
     tile tiles[MAX_TILES];
