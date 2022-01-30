@@ -32,3 +32,12 @@ double len_cal(Sint16 x1,Sint16 x2,Sint16 y1,Sint16 y2)
     double d_d = (d_x * d_x) + (d_y * d_y) ;
     return sqrt(d_d);
 }
+int counter (int n)
+{
+    int fin = 0;
+    while(n>0){
+        n /= 10;
+        fin++;
+    }
+    return fin;
+}

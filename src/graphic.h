@@ -15,5 +15,6 @@ int is_valid_start(map mps);
 int is_valid_end(map mps);
 int check_soldiers_len(double x_soldiers[],double y_soldiers[],int j);
 int is_arrived (int x,int y,tile c);
+int color_check(tile s,tile e);
 
 #endif //MYF_GRAPHIC_H

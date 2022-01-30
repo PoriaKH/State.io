@@ -50,6 +50,11 @@ int is_valid_start(map mps){
             break;
         }
     }
+    if(flag1 != -1)
+    {
+        if(mps.tiles[flag1].soldiers == 0)
+            flag1 = -1;
+    }
     return flag1;
 }
 int is_valid_end(map mps){
@@ -77,4 +82,10 @@ int is_arrived (int x,int y,tile c){
         return 1;
     else
         return 0;
+}
+int color_check(tile s,tile e){
+    if(s.c_color == e.c_color)
+        return 1;
+    else
+        return -1;
 }
