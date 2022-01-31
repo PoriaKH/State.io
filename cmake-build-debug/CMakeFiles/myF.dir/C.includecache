@@ -607,6 +607,8 @@ stdio.h
 -
 stdbool.h
 -
+time.h
+-
 main.h
 C:/Users/PoriaKP/CLionProjects/myF/src/main.h
 math.h

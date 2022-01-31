@@ -6,6 +6,7 @@
 #include "graphic.h"
 #include "main.h"
 #include "math.h"
+#include <stdio.h>
 
 int x0_click,y0_click;
 int x1_click,y1_click;
@@ -57,7 +58,10 @@ int is_valid_start(map mps){
     }
     return flag1;
 }
-int is_valid_end(map mps){
+int is_valid_end(map mps,int start){
+    if(start == -1)
+        return -1;
+
     int flag2 = -1;
     for(int j = 1; j <= NUM_OF_TILES_FOR_EACH_MAP; j++)
     {
@@ -65,6 +69,15 @@ int is_valid_end(map mps){
         {
             flag2 = j;
             break;
+        }
+    }
+
+    if(flag2 != -1) {
+        if (mps.tiles[flag2].soldiers >= MAX_NUM_OF_SOLDIERS_AT_ALL) {
+            printf("mps.tiles[start].soldiers = %d  end = %d\n",mps.tiles[start].soldiers,mps.tiles[flag2].soldiers);
+            if (mps.tiles[start].b_color == mps.tiles[flag2].b_color) {
+                flag2 = -1;
+            }
         }
     }
     return flag2;

@@ -2,6 +2,7 @@
 #include <SDL2_gfxPrimitives.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <time.h>
 #include "main.h"
 #include "math.h"
 #include "graphic.h"
@@ -23,11 +24,15 @@ const int cubes_r = 20;
 const int soldiers_r = 4;
 const int soldiers_speed = 2;
 const int NUM_OF_PLAYERS = 3;
-const int FIRST_NUM_OF_SOLDIERS = 10;
-const int FIRST_NUM_OF_SOLDIERS_TEAM_0 = 11;
+const int FIRST_NUM_OF_SOLDIERS = 12;
+const int FIRST_NUM_OF_SOLDIERS_TEAM_0 = 10;
+const int MAX_NUM_OF_SOLDIERS_TO_REACH = 50;
+const int MAX_NUM_OF_SOLDIERS_TO_REACH_TEAM0 = 10;
+const int MAX_NUM_OF_SOLDIERS_AT_ALL = 500;
 
-int NUM_OF_SOLDIERS = 30;
+int NUM_OF_SOLDIERS = 0;
 int NUM_OF_TILES_FOR_EACH_MAP;
+int team0[4] = {-1,-1,-1,-1};
 
 Uint32 b_color1 = 0xaa800000;             //blue
 Uint32 c_color1 = 0xFFA50011;
@@ -132,16 +137,19 @@ void initialize_teams(map* c)
         c->tiles[n5].b_color = b_color_team_0;
         c->tiles[n5].c_color = c_color_team_0;
         c->tiles[n5].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+        team0[0] = n5;
 
         c->tiles[n6].team = 0;
         c->tiles[n6].b_color = b_color_team_0;
         c->tiles[n6].c_color = c_color_team_0;
         c->tiles[n6].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+        team0[1] = n6;
 
         c->tiles[n7].team = 0;
         c->tiles[n7].b_color = b_color_team_0;
         c->tiles[n7].c_color = c_color_team_0;
         c->tiles[n7].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+        team0[2] = n7;
     }
     if(NUM_OF_PLAYERS == 3){
         //blue, red and pink
@@ -192,21 +200,25 @@ void initialize_teams(map* c)
         c->tiles[n4].b_color = b_color_team_0;
         c->tiles[n4].c_color = c_color_team_0;
         c->tiles[n4].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+        team0[0] = n4;
 
         c->tiles[n5].team = 0;
         c->tiles[n5].b_color = b_color_team_0;
         c->tiles[n5].c_color = c_color_team_0;
         c->tiles[n5].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+        team0[1] = n5;
 
         c->tiles[n6].team = 0;
         c->tiles[n6].b_color = b_color_team_0;
         c->tiles[n6].c_color = c_color_team_0;
         c->tiles[n6].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+        team0[2] = n6;
 
         c->tiles[n7].team = 0;
         c->tiles[n7].b_color = b_color_team_0;
         c->tiles[n7].c_color = c_color_team_0;
         c->tiles[n7].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+        team0[3] = n7;
     }
     if(NUM_OF_PLAYERS == 4){
         //blue, red, pink and yellow
@@ -267,21 +279,25 @@ void initialize_teams(map* c)
         c->tiles[n5].b_color = b_color_team_0;
         c->tiles[n5].c_color = c_color_team_0;
         c->tiles[n5].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+        team0[0] = n5;
 
         c->tiles[n6].team = 0;
         c->tiles[n6].b_color = b_color_team_0;
         c->tiles[n6].c_color = c_color_team_0;
         c->tiles[n6].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+        team0[1] = n6;
 
         c->tiles[n7].team = 0;
         c->tiles[n7].b_color = b_color_team_0;
         c->tiles[n7].c_color = c_color_team_0;
         c->tiles[n7].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+        team0[2] = n7;
 
         c->tiles[n8].team = 0;
         c->tiles[n8].b_color = b_color_team_0;
         c->tiles[n8].c_color = c_color_team_0;
         c->tiles[n8].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+        team0[3] = n8;
     }
 }
 int main()
@@ -445,21 +461,20 @@ int main()
     int j_backup = 0;
     int end_backup = -1;
     int delta = 0;
+    int time_flag = 0;
 
-    double x_soldiers[NUM_OF_SOLDIERS];
-    double y_soldiers[NUM_OF_SOLDIERS];
+    double x_soldiers[MAX_NUM_OF_SOLDIERS_AT_ALL];
+    double y_soldiers[MAX_NUM_OF_SOLDIERS_AT_ALL];
+
+    time_t time_begin = time(NULL);
 
     SDL_bool shallExit = SDL_FALSE;
     while (shallExit == SDL_FALSE) {
 
+        time_t time_end = time(NULL);
+
         SDL_SetRenderDrawColor(sdlRenderer, 0xff, 0xff, 0xff, 0xff);
         SDL_RenderClear(sdlRenderer);
-
-
-        Uint32 color1 = 0xff000000;
-        Uint32 color2 = 0xf1ff0000;
-        Uint32 color3 = 0xffffff02;
-        Uint32 color4 = 0xfff0f000;
 
 
             for (int i = 1; i < NUM_OF_TILES_FOR_EACH_MAP; i++) {
@@ -475,6 +490,9 @@ int main()
 
                     if (counter(mps[0].tiles[i].soldiers) == 2)
                         stringColor(sdlRenderer, mps[0].tiles[i].x_o - 8, mps[0].tiles[i].y_o - 3, text, 0xff000000);
+
+                    if(counter(mps[0].tiles[i].soldiers) == 3)
+                        stringColor(sdlRenderer, mps[0].tiles[i].x_o - 11, mps[0].tiles[i].y_o - 3, text, 0xff000000);
                 }
                 else if(i != end_backup){
                     if (counter(mps[0].tiles[i].soldiers) == 0 || counter(mps[0].tiles[i].soldiers) == 1)
@@ -482,7 +500,30 @@ int main()
 
                     if (counter(mps[0].tiles[i].soldiers) == 2)
                         stringColor(sdlRenderer, mps[0].tiles[i].x_o - 8, mps[0].tiles[i].y_o - 3, text, 0xff000000);
+
+                    if(counter(mps[0].tiles[i].soldiers) == 3)
+                        stringColor(sdlRenderer, mps[0].tiles[i].x_o - 11, mps[0].tiles[i].y_o - 3, text, 0xff000000);
                 }
+
+                if(time_end - time_begin >= 1){
+                    if(mps[0].tiles[i].team != 0) {
+                        if (mps[0].tiles[i].soldiers < MAX_NUM_OF_SOLDIERS_TO_REACH) {
+                            mps[0].tiles[i].soldiers += time_end - time_begin;
+                            time_flag = 1;
+                        }
+                    }
+                    else{
+                        if (mps[0].tiles[i].soldiers < MAX_NUM_OF_SOLDIERS_TO_REACH_TEAM0) {
+                            mps[0].tiles[i].soldiers += time_end - time_begin;
+                            time_flag = 1;
+                        }
+                    }
+                }
+            }
+
+            if(time_flag){
+                time_begin = time_end;
+                time_flag = 0;
             }
 
         if(final_flag == 0)
@@ -495,7 +536,7 @@ int main()
         SDL_Event event;
         if(click(event) == 1) {
             start = is_valid_start(mps[0]);
-            end = is_valid_end(mps[0]);
+            end = is_valid_end(mps[0],start);
             end_backup = end;
 
             if (start != -1 && end != -1 && start != end) {
@@ -551,9 +592,10 @@ int main()
 // friend -> 1 , enemy -> -1
                             int friend_or_enemy = color_check(mps[0].tiles[start],mps[0].tiles[end]);
 
-                            if(friend_or_enemy == 1)
-                                mps[0].tiles[end].soldiers += 2;
-
+                            if(friend_or_enemy == 1) {
+                                if(mps[0].tiles[end].soldiers + 2 <= MAX_NUM_OF_SOLDIERS_AT_ALL)
+                                    mps[0].tiles[end].soldiers += 2;
+                            }
                             else if(friend_or_enemy == -1) {
                                 if(mps[0].tiles[end].soldiers - 2 >= 0)
                                     mps[0].tiles[end].soldiers -= 2;
@@ -573,6 +615,10 @@ int main()
 
                             if (counter(mps[0].tiles[end].soldiers) == 2)
                                 stringColor(sdlRenderer, mps[0].tiles[end].x_o - 8, mps[0].tiles[end].y_o - 3, text, 0xff000000);
+
+                            if(counter(mps[0].tiles[i].soldiers) == 3)
+                                stringColor(sdlRenderer, mps[0].tiles[end].x_o - 11, mps[0].tiles[end].y_o - 3, text, 0xff000000);
+
                         }
 
                         if(!arrived_0){
@@ -605,9 +651,10 @@ int main()
                             }
                         }
 
-                        if (friend_or_enemy == 1)
-                            mps[0].tiles[end].soldiers += damage;
-
+                        if (friend_or_enemy == 1) {
+                            if(mps[0].tiles[end].soldiers + damage <= MAX_NUM_OF_SOLDIERS_AT_ALL)
+                                mps[0].tiles[end].soldiers += damage;
+                        }
                         else if (friend_or_enemy == -1) {
                             if (mps[0].tiles[end].soldiers - damage >= 0)
                                 mps[0].tiles[end].soldiers -= damage;
@@ -620,7 +667,6 @@ int main()
                                 mps[0].tiles[end].soldiers = damage - mps[0].tiles[end].soldiers - 1;
                             }
                         }
-                        printf("soldiers=%d\n",mps[0].tiles[end].soldiers);
 
                         char text[10];
                         sprintf(text, "%d", mps[0].tiles[end].soldiers);
@@ -629,6 +675,9 @@ int main()
 
                         if (counter(mps[0].tiles[end].soldiers) == 2)
                             stringColor(sdlRenderer, mps[0].tiles[end].x_o - 8, mps[0].tiles[end].y_o - 3, text, 0xff000000);
+
+                        if(counter(mps[0].tiles[end].soldiers) == 3)
+                            stringColor(sdlRenderer, mps[0].tiles[end].x_o - 11, mps[0].tiles[end].y_o - 3, text, 0xff000000);
                     }
 
                     if(!arrived)
