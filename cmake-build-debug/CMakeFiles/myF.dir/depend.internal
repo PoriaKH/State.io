@@ -93,6 +93,7 @@ CMakeFiles/myF.dir/src/main.c.obj
  ../sdl2/sdl2-include/SDL_thread.h
  ../sdl2/sdl2-include/SDL_timer.h
  ../sdl2/sdl2-include/SDL_touch.h
+ ../sdl2/sdl2-include/SDL_ttf.h
  ../sdl2/sdl2-include/SDL_version.h
  ../sdl2/sdl2-include/SDL_video.h
  ../sdl2/sdl2-include/begin_code.h

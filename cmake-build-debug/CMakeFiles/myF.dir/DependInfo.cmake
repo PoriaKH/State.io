@@ -14,6 +14,8 @@ set(CMAKE_C_COMPILER_ID "GNU")
 set(CMAKE_C_TARGET_INCLUDE_PATH
   "../sdl2/sdl2-include"
   "../sdl2/sdl2-gfx-include"
+  "../sdl2/sdl2-ttf-include"
+  "../sdl2/sdl2-ttf-lib"
   )
 
 # Targets to which this target links.

@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <SDL2_gfxPrimitives.h>
+#include <SDL_ttf.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
@@ -23,7 +24,7 @@ const int min_height_of_tile = 70;
 const int cubes_r = 20;
 const int soldiers_r = 4;
 const int soldiers_speed = 2;
-const int NUM_OF_PLAYERS = 3;
+const int NUM_OF_PLAYERS = 2;
 const int FIRST_NUM_OF_SOLDIERS = 12;
 const int FIRST_NUM_OF_SOLDIERS_TEAM_0 = 10;
 const int MAX_NUM_OF_SOLDIERS_TO_REACH = 50;
@@ -33,12 +34,16 @@ const int MAX_NUM_OF_SOLDIERS_AT_ALL = 500;
 int NUM_OF_SOLDIERS = 0;
 int NUM_OF_TILES_FOR_EACH_MAP;
 int team0[4] = {-1,-1,-1,-1};
+int team1[2] = {-1,-1};
+int team2[2] = {-1,-1};
+int team3[1] = {-1};
+int team4[1] = {-1};
 
-Uint32 b_color1 = 0xaa800000;             //blue
-Uint32 c_color1 = 0xFFA50011;
+Uint32 b_color1 = 0xff000099;             //red
+Uint32 c_color1 = 0xff0000ff;
 
-Uint32 b_color2 = 0xff000099;             //red
-Uint32 c_color2 = 0xff0000ff;
+Uint32 b_color2 = 0xaa800000;             //blue
+Uint32 c_color2 = 0xFFA50011;
 
 Uint32 b_color3 = 0xFFEF00bb;             //pink
 Uint32 c_color3= 0xFFEF00ff;
@@ -92,12 +97,14 @@ void initialize_teams(map* c)
         c->tiles[n1].b_color = b_color1;
         c->tiles[n1].c_color = c_color1;
         c->tiles[n1].soldiers = FIRST_NUM_OF_SOLDIERS;
+        team1[0] = n1;
 
 
         c->tiles[n2].team = 1;
         c->tiles[n2].b_color = b_color1;
         c->tiles[n2].c_color = c_color1;
         c->tiles[n2].soldiers = FIRST_NUM_OF_SOLDIERS;
+        team1[1] = n2;
 
         int n3 = rand() % 7 + 1;
         while(n3 == n1 || n3 == n2){
@@ -112,11 +119,13 @@ void initialize_teams(map* c)
         c->tiles[n3].b_color = b_color2;
         c->tiles[n3].c_color = c_color2;
         c->tiles[n3].soldiers = FIRST_NUM_OF_SOLDIERS;
+        team2[0] = n3;
 
         c->tiles[n4].team = 2;
         c->tiles[n4].b_color = b_color2;
         c->tiles[n4].c_color = c_color2;
         c->tiles[n4].soldiers = FIRST_NUM_OF_SOLDIERS;
+        team2[1] = n4;
 
         int n5 = rand() % 7 + 1;
         while(n5 == n4 || n5 == n3 || n5 == n2 || n5 == n1){
@@ -167,16 +176,19 @@ void initialize_teams(map* c)
         c->tiles[n1].b_color = b_color1;
         c->tiles[n1].c_color = c_color1;
         c->tiles[n1].soldiers = FIRST_NUM_OF_SOLDIERS;
+        team1[0] = n1;
 
         c->tiles[n2].team = 2;
         c->tiles[n2].b_color = b_color2;
         c->tiles[n2].c_color = c_color2;
         c->tiles[n2].soldiers = FIRST_NUM_OF_SOLDIERS;
+        team2[0] = n2;
 
         c->tiles[n3].team = 3;
         c->tiles[n3].b_color = b_color3;
         c->tiles[n3].c_color = c_color3;
         c->tiles[n3].soldiers = FIRST_NUM_OF_SOLDIERS;
+        team3[0] = n3;
 
         int n4 = rand() % 7 + 1;
         while(n4 == n3 || n4 == n2 || n4 == n1){
@@ -240,21 +252,25 @@ void initialize_teams(map* c)
         c->tiles[n1].b_color = b_color1;
         c->tiles[n1].c_color = c_color1;
         c->tiles[n1].soldiers = FIRST_NUM_OF_SOLDIERS;
+        team1[0] = n1;
 
         c->tiles[n2].team = 2;
         c->tiles[n2].b_color = b_color2;
         c->tiles[n2].c_color = c_color2;
         c->tiles[n2].soldiers = FIRST_NUM_OF_SOLDIERS;
+        team2[0] = n2;
 
         c->tiles[n3].team = 3;
         c->tiles[n3].b_color = b_color3;
         c->tiles[n3].c_color = c_color3;
         c->tiles[n3].soldiers = FIRST_NUM_OF_SOLDIERS;
+        team3[0] = n3;
 
         c->tiles[n4].team = 4;
         c->tiles[n4].b_color = b_color4;
         c->tiles[n4].c_color = c_color4;
         c->tiles[n4].soldiers = FIRST_NUM_OF_SOLDIERS;
+        team4[0] = n4;
 
         int n5 = rand() % 7 + 1;
         int n6 = rand() % 7 + 1;
@@ -303,7 +319,6 @@ void initialize_teams(map* c)
 int main()
 {
     // <----> Height
-
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         return 0;
@@ -455,6 +470,7 @@ int main()
     SDL_Renderer *sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
 
     int final_flag = 0;
+    int final_flag_important = 0;
     int final_flag2 = 0;
     int final_flag3 = 1;
     int arrived_flag = 0;
@@ -462,11 +478,15 @@ int main()
     int end_backup = -1;
     int delta = 0;
     int time_flag = 0;
+    int s = -1;
+    int e = -1;
 
     double x_soldiers[MAX_NUM_OF_SOLDIERS_AT_ALL];
     double y_soldiers[MAX_NUM_OF_SOLDIERS_AT_ALL];
 
     time_t time_begin = time(NULL);
+    time_t time_begin_for_bots = time(NULL);
+
 
     SDL_bool shallExit = SDL_FALSE;
     while (shallExit == SDL_FALSE) {
@@ -477,242 +497,280 @@ int main()
         SDL_RenderClear(sdlRenderer);
 
 
-            for (int i = 1; i < NUM_OF_TILES_FOR_EACH_MAP; i++) {
-                boxColor(sdlRenderer, mps[0].tiles[i].x1, mps[0].tiles[i].y1, mps[0].tiles[i].x2, mps[0].tiles[i].y2,mps[0].tiles[i].b_color);
+        for (int i = 1; i < NUM_OF_TILES_FOR_EACH_MAP; i++) {
+            boxColor(sdlRenderer, mps[0].tiles[i].x1, mps[0].tiles[i].y1, mps[0].tiles[i].x2, mps[0].tiles[i].y2,
+                     mps[0].tiles[i].b_color);
 
-                filledCircleColor(sdlRenderer, mps[0].tiles[i].x_o, mps[0].tiles[i].y_o, cubes_r, mps[0].tiles[i].c_color);
-                char text[10];
-                sprintf(text, "%d", mps[0].tiles[i].soldiers);
+            filledCircleColor(sdlRenderer, mps[0].tiles[i].x_o, mps[0].tiles[i].y_o, cubes_r, mps[0].tiles[i].c_color);
+            char text[10];
+            sprintf(text, "%d", mps[0].tiles[i].soldiers);
 
-                if(arrived_flag == 0) {
-                    if (counter(mps[0].tiles[i].soldiers) == 0 || counter(mps[0].tiles[i].soldiers) == 1)
-                        stringColor(sdlRenderer, mps[0].tiles[i].x_o - 3, mps[0].tiles[i].y_o - 3, text, 0xff000000);
+            if (arrived_flag == 0) {
+                if (counter(mps[0].tiles[i].soldiers) == 0 || counter(mps[0].tiles[i].soldiers) == 1)
+                    stringColor(sdlRenderer, mps[0].tiles[i].x_o - 3, mps[0].tiles[i].y_o - 3, text, 0xff000000);
 
-                    if (counter(mps[0].tiles[i].soldiers) == 2)
-                        stringColor(sdlRenderer, mps[0].tiles[i].x_o - 8, mps[0].tiles[i].y_o - 3, text, 0xff000000);
+                if (counter(mps[0].tiles[i].soldiers) == 2)
+                    stringColor(sdlRenderer, mps[0].tiles[i].x_o - 8, mps[0].tiles[i].y_o - 3, text, 0xff000000);
 
-                    if(counter(mps[0].tiles[i].soldiers) == 3)
-                        stringColor(sdlRenderer, mps[0].tiles[i].x_o - 11, mps[0].tiles[i].y_o - 3, text, 0xff000000);
-                }
-                else if(i != end_backup){
-                    if (counter(mps[0].tiles[i].soldiers) == 0 || counter(mps[0].tiles[i].soldiers) == 1)
-                        stringColor(sdlRenderer, mps[0].tiles[i].x_o - 3, mps[0].tiles[i].y_o - 3, text, 0xff000000);
+                if (counter(mps[0].tiles[i].soldiers) == 3)
+                    stringColor(sdlRenderer, mps[0].tiles[i].x_o - 11, mps[0].tiles[i].y_o - 3, text, 0xff000000);
+            } else if (i != end_backup) {
+                if (counter(mps[0].tiles[i].soldiers) == 0 || counter(mps[0].tiles[i].soldiers) == 1)
+                    stringColor(sdlRenderer, mps[0].tiles[i].x_o - 3, mps[0].tiles[i].y_o - 3, text, 0xff000000);
 
-                    if (counter(mps[0].tiles[i].soldiers) == 2)
-                        stringColor(sdlRenderer, mps[0].tiles[i].x_o - 8, mps[0].tiles[i].y_o - 3, text, 0xff000000);
+                if (counter(mps[0].tiles[i].soldiers) == 2)
+                    stringColor(sdlRenderer, mps[0].tiles[i].x_o - 8, mps[0].tiles[i].y_o - 3, text, 0xff000000);
 
-                    if(counter(mps[0].tiles[i].soldiers) == 3)
-                        stringColor(sdlRenderer, mps[0].tiles[i].x_o - 11, mps[0].tiles[i].y_o - 3, text, 0xff000000);
-                }
+                if (counter(mps[0].tiles[i].soldiers) == 3)
+                    stringColor(sdlRenderer, mps[0].tiles[i].x_o - 11, mps[0].tiles[i].y_o - 3, text, 0xff000000);
+            }
 
-                if(time_end - time_begin >= 1){
-                    if(mps[0].tiles[i].team != 0) {
-                        if (mps[0].tiles[i].soldiers < MAX_NUM_OF_SOLDIERS_TO_REACH) {
-                            mps[0].tiles[i].soldiers += time_end - time_begin;
-                            time_flag = 1;
-                        }
+
+            if (time_end - time_begin >= 1) {
+                if (mps[0].tiles[i].team != 0) {
+                    if (mps[0].tiles[i].soldiers < MAX_NUM_OF_SOLDIERS_TO_REACH) {
+                        mps[0].tiles[i].soldiers += time_end - time_begin;
+                        if(mps[0].tiles[i].soldiers > MAX_NUM_OF_SOLDIERS_TO_REACH)
+                            mps[0].tiles[i].soldiers = MAX_NUM_OF_SOLDIERS_TO_REACH;
+                        time_flag = 1;
                     }
-                    else{
-                        if (mps[0].tiles[i].soldiers < MAX_NUM_OF_SOLDIERS_TO_REACH_TEAM0) {
-                            mps[0].tiles[i].soldiers += time_end - time_begin;
-                            time_flag = 1;
-                        }
+                } else {
+                    if(mps[0].tiles[i].soldiers >= MAX_NUM_OF_SOLDIERS_TO_REACH_TEAM0){
+                        time_flag = 1;
+                    }
+                    if (mps[0].tiles[i].soldiers < MAX_NUM_OF_SOLDIERS_TO_REACH_TEAM0) {
+                        mps[0].tiles[i].soldiers += time_end - time_begin;
+                        if(mps[0].tiles[i].soldiers > MAX_NUM_OF_SOLDIERS_TO_REACH_TEAM0)
+                            mps[0].tiles[i].soldiers = MAX_NUM_OF_SOLDIERS_TO_REACH_TEAM0;
+                        time_flag = 1;
                     }
                 }
             }
+        }
 
-            if(time_flag){
-                time_begin = time_end;
-                time_flag = 0;
-            }
+        if (time_flag) {
+            time_begin = time_end;
+            time_flag = 0;
+        }
 
-        if(final_flag == 0)
+        if (final_flag == 0)
             SDL_RenderPresent(sdlRenderer);
         //SDL_Delay(1000 / FPS);
 
 
-        int start,end;
+        int start, end;
 
-        SDL_Event event;
-        if(click(event) == 1) {
-            start = is_valid_start(mps[0]);
-            end = is_valid_end(mps[0],start);
-            end_backup = end;
+//bot attacks
 
-            if (start != -1 && end != -1 && start != end) {
+        time_t time_end_for_bots = time(NULL);
+        if (time_end_for_bots - time_begin_for_bots >= 5 && final_flag_important == 0) {
+//tiles are from 1 to NUM_OF_TILES_FOR_EACH_MAP - 1
+            if (NUM_OF_PLAYERS == 2) {
+                if (s == -1 && e == -1) {
+                    int tr = 1;
+                    for (int i = 1; i < NUM_OF_TILES_FOR_EACH_MAP; i++) {
+
+                        if (tr == 0)
+                            break;
+
+                        if (mps[0].tiles[i].team == 2) {
+                            for (int j = 1; j < NUM_OF_TILES_FOR_EACH_MAP; j++) {
+                                if (mps[0].tiles[j].team == 1) {
+                                    if (mps[0].tiles[j].soldiers < mps[0].tiles[i].soldiers) {
+                                        s = i;
+                                        e = j;
+                                        tr = 0;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if (i == NUM_OF_TILES_FOR_EACH_MAP - 1 && tr == 1) {
+                            for (int i = 1; i < NUM_OF_TILES_FOR_EACH_MAP; i++) {
+
+                                if (tr == 0)
+                                    break;
+
+                                if (mps[0].tiles[i].team == 2) {
+                                    for (int j = 1; j < NUM_OF_TILES_FOR_EACH_MAP; j++) {
+                                        if (mps[0].tiles[j].team == 0) {
+                                            if (mps[0].tiles[j].soldiers < mps[0].tiles[i].soldiers) {
+                                                s = i;
+                                                e = j;
+                                                tr = 0;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (s != -1 && e != -1) {
+                    //printf("bot\n");
+                    final_flag = 1;
+                    int *final__flag = &final_flag;
+                    map *c = &mps[0];
+                    send_soldiers(c, s, e, sdlRenderer, x_soldiers, y_soldiers, final__flag);
+                    if (final_flag == 0) {
+                        time_begin_for_bots = time(NULL);
+                        s = -1;
+                        e = -1;
+                    }
+                }
+            }
+            if (NUM_OF_PLAYERS == 3) {
+                if (s == -1 && e == -1) {
+                    int tr = 1;
+                    for (int i = 1; i < NUM_OF_TILES_FOR_EACH_MAP; i++) {
+
+                        if (tr == 0)
+                            break;
+
+                        if (mps[0].tiles[i].team == 2 || mps[0].tiles[i].team == 3) {
+                            for (int j = 1; j < NUM_OF_TILES_FOR_EACH_MAP; j++) {
+                                if (mps[0].tiles[j].team == 1) {
+                                    if (mps[0].tiles[j].soldiers < mps[0].tiles[i].soldiers) {
+                                        s = i;
+                                        e = j;
+                                        tr = 0;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if (i == NUM_OF_TILES_FOR_EACH_MAP - 1 && tr == 1) {
+                            for (int i = 1; i < NUM_OF_TILES_FOR_EACH_MAP; i++) {
+
+                                if (tr == 0)
+                                    break;
+
+                                if (mps[0].tiles[i].team == 2 || mps[0].tiles[i].team == 3) {
+                                    for (int j = 1; j < NUM_OF_TILES_FOR_EACH_MAP; j++) {
+                                        if (mps[0].tiles[j].team == 0) {
+                                            if (mps[0].tiles[j].soldiers < mps[0].tiles[i].soldiers) {
+                                                s = i;
+                                                e = j;
+                                                tr = 0;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (s != -1 && e != -1) {
+                    //printf("bot\n");
+                    final_flag = 1;
+                    int *final__flag = &final_flag;
+                    map *c = &mps[0];
+                    send_soldiers(c, s, e, sdlRenderer, x_soldiers, y_soldiers, final__flag);
+                    if (final_flag == 0) {
+                        time_begin_for_bots = time(NULL);
+                        s = -1;
+                        e = -1;
+                    }
+                }
+            }
+            if (NUM_OF_PLAYERS == 4) {
+                if (s == -1 && e == -1) {
+                    int tr = 1;
+                    for (int i = 1; i < NUM_OF_TILES_FOR_EACH_MAP; i++) {
+
+                        if (tr == 0)
+                            break;
+
+                        if (mps[0].tiles[i].team == 2 || mps[0].tiles[i].team == 3 || mps[0].tiles[i].team == 4) {
+                            for (int j = 1; j < NUM_OF_TILES_FOR_EACH_MAP; j++) {
+                                if (mps[0].tiles[j].team == 1) {
+                                    if (mps[0].tiles[j].soldiers < mps[0].tiles[i].soldiers) {
+                                        s = i;
+                                        e = j;
+                                        tr = 0;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if (i == NUM_OF_TILES_FOR_EACH_MAP - 1 && tr == 1) {
+                            for (int i = 1; i < NUM_OF_TILES_FOR_EACH_MAP; i++) {
+
+                                if (tr == 0)
+                                    break;
+
+                                if (mps[0].tiles[i].team == 2 || mps[0].tiles[i].team == 3 || mps[0].tiles[i].team == 4) {
+                                    for (int j = 1; j < NUM_OF_TILES_FOR_EACH_MAP; j++) {
+                                        if (mps[0].tiles[j].team == 0) {
+                                            if (mps[0].tiles[j].soldiers < mps[0].tiles[i].soldiers) {
+                                                s = i;
+                                                e = j;
+                                                tr = 0;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (s != -1 && e != -1) {
+                    //printf("bot\n");
+                    final_flag = 1;
+                    int *final__flag = &final_flag;
+                    map *c = &mps[0];
+                    send_soldiers(c, s, e, sdlRenderer, x_soldiers, y_soldiers, final__flag);
+                    if (final_flag == 0) {
+                        time_begin_for_bots = time(NULL);
+                        s = -1;
+                        e = -1;
+                    }
+                }
+            }
+        }
+//--------------------------//
+        if(s == -1 && e == -1 && final_flag == 0 && final_flag_important == 0) {
+            SDL_Event event;
+            if (click(event) == 1) {
+                start = is_valid_start(mps[0]);
+                end = is_valid_end(mps[0], start);
+                end_backup = end;
+
+                if (start != -1 && end != -1 && start != end) {
 //                printf("its valid\n");
 //                printf("x0 =%d  y0 =%d\n",x0_click,y0_click);
 //                printf("x1 =%d  y1 =%d\n",x1_click,y1_click);
 
-// send soldiers from start to end tile
-                final_flag = 1;
-            }
-        }
-        if(final_flag == 1){
-            if(final_flag2 == 0) {
-                final_flag2 = 1;
-
-                NUM_OF_SOLDIERS = mps[0].tiles[start].soldiers / 2;
-
-                if(mps[0].tiles[start].soldiers % 2 == 1)
-                    delta = 1;
-
-                if(delta)
-                    NUM_OF_SOLDIERS = mps[0].tiles[start].soldiers / 2 + 1;
-
-                for(int i = 0; i < NUM_OF_SOLDIERS ; i++) {
-                    x_soldiers[i] = mps[0].tiles[start].x_o;
-                    y_soldiers[i] = mps[0].tiles[start].y_o;
+                    final_flag = 1;
+                    final_flag_important = 1;
                 }
             }
-
-            double len = len_cal(mps[0].tiles[start].x_o,mps[0].tiles[end].x_o,mps[0].tiles[start].y_o,mps[0].tiles[end].y_o);
-            double V_x = (double)soldiers_speed * (mps[0].tiles[end].x_o - mps[0].tiles[start].x_o) / len;
-            double V_y = (double)soldiers_speed * (mps[0].tiles[end].y_o - mps[0].tiles[start].y_o) / len;
-
-            if(final_flag3 == 1) {
-                for (int i = 0; i < NUM_OF_SOLDIERS; i++) {
-                    for (int j = 0; j <= i; j++) {
-                    if(i != 0){
-                        //check
-                        if(!check_soldiers_len(x_soldiers,y_soldiers,i)){
-                            i--;
-                        }
-                    }
-                        x_soldiers[j] += V_x;
-                        y_soldiers[j] += V_y;
-
-                    }
-                    for (int j = j_backup; j <= i; j++) {
-                        bool arrived_0 = is_arrived(x_soldiers[j],y_soldiers[j],mps[0].tiles[end]);
-
-                        if(arrived_0) {
-                            j_backup = j + 1;
-                            arrived_flag = 1;
-// friend -> 1 , enemy -> -1
-                            int friend_or_enemy = color_check(mps[0].tiles[start],mps[0].tiles[end]);
-
-                            if(friend_or_enemy == 1) {
-                                if(mps[0].tiles[end].soldiers + 2 <= MAX_NUM_OF_SOLDIERS_AT_ALL)
-                                    mps[0].tiles[end].soldiers += 2;
-                            }
-                            else if(friend_or_enemy == -1) {
-                                if(mps[0].tiles[end].soldiers - 2 >= 0)
-                                    mps[0].tiles[end].soldiers -= 2;
-
-                                else{
-                                    mps[0].tiles[end].c_color = mps[0].tiles[start].c_color;
-                                    mps[0].tiles[end].b_color = mps[0].tiles[start].b_color;
-                                    mps[0].tiles[end].team = mps[0].tiles[start].team;
-                                }
-                            }
+        }
+// sending soldiers from start to end tile//
+            if (final_flag == 1 && final_flag_important == 1 && s == -1 && e == -1) {
+                //printf("tooye click\n");
+                int *final__flag = &final_flag;
+                map *c = &mps[0];
+                send_soldiers(c, start, end, sdlRenderer, x_soldiers, y_soldiers, final__flag);
+                if(final_flag == 0)
+                    final_flag_important = 0;
+            }
+            //printf("final_flag=%d  imp=%d\n",final_flag,final_flag_important);
+//----------------------------------------//
 
 
-                            char text[10];
-                            sprintf(text, "%d", mps[0].tiles[end].soldiers);
-                            if (counter(mps[0].tiles[end].soldiers) == 0 || counter(mps[0].tiles[end].soldiers) == 1)
-                                stringColor(sdlRenderer, mps[0].tiles[end].x_o - 3, mps[0].tiles[end].y_o - 3, text, 0xff000000);
-
-                            if (counter(mps[0].tiles[end].soldiers) == 2)
-                                stringColor(sdlRenderer, mps[0].tiles[end].x_o - 8, mps[0].tiles[end].y_o - 3, text, 0xff000000);
-
-                            if(counter(mps[0].tiles[i].soldiers) == 3)
-                                stringColor(sdlRenderer, mps[0].tiles[end].x_o - 11, mps[0].tiles[end].y_o - 3, text, 0xff000000);
-
-                        }
-
-                        if(!arrived_0){
-                            filledCircleColor(sdlRenderer, x_soldiers[j], y_soldiers[j], soldiers_r, mps[0].tiles[start].c_color);
-                        }
-                    }
-                    mps[0].tiles[start].soldiers = 0;
-                    SDL_RenderPresent(sdlRenderer);
-
-                    if (i == NUM_OF_SOLDIERS - 1)
-                        final_flag3 = 0;
+            SDL_Event sdlEvent;
+            while (SDL_PollEvent(&sdlEvent)) {
+                switch (sdlEvent.type) {
+                    case SDL_QUIT:
+                        shallExit = SDL_TRUE;
+                        break;
                 }
             }
-
-            if(final_flag3 == 0) {
-                for (int j = j_backup; j < NUM_OF_SOLDIERS; j++) {
-                    x_soldiers[j] += V_x;
-                    y_soldiers[j] += V_y;
-
-                    bool arrived = is_arrived(x_soldiers[j],y_soldiers[j],mps[0].tiles[end]);
-                    if(arrived) {
-                        j_backup = j + 1;
-                        arrived_flag = 1;
-                        int friend_or_enemy = color_check(mps[0].tiles[start], mps[0].tiles[end]);
-                        int damage = 2;
-
-                        if(j == NUM_OF_SOLDIERS - 1){
-                            if(delta == 1){
-                                damage = 1;
-                            }
-                        }
-
-                        if (friend_or_enemy == 1) {
-                            if(mps[0].tiles[end].soldiers + damage <= MAX_NUM_OF_SOLDIERS_AT_ALL)
-                                mps[0].tiles[end].soldiers += damage;
-                        }
-                        else if (friend_or_enemy == -1) {
-                            if (mps[0].tiles[end].soldiers - damage >= 0)
-                                mps[0].tiles[end].soldiers -= damage;
-
-                            else {
-                                mps[0].tiles[end].c_color = mps[0].tiles[start].c_color;
-                                mps[0].tiles[end].b_color = mps[0].tiles[start].b_color;
-                                mps[0].tiles[end].team = mps[0].tiles[start].team;
-
-                                mps[0].tiles[end].soldiers = damage - mps[0].tiles[end].soldiers - 1;
-                            }
-                        }
-
-                        char text[10];
-                        sprintf(text, "%d", mps[0].tiles[end].soldiers);
-                        if (counter(mps[0].tiles[end].soldiers) == 0 || counter(mps[0].tiles[end].soldiers) == 1)
-                            stringColor(sdlRenderer, mps[0].tiles[end].x_o - 3, mps[0].tiles[end].y_o - 3, text, 0xff000000);
-
-                        if (counter(mps[0].tiles[end].soldiers) == 2)
-                            stringColor(sdlRenderer, mps[0].tiles[end].x_o - 8, mps[0].tiles[end].y_o - 3, text, 0xff000000);
-
-                        if(counter(mps[0].tiles[end].soldiers) == 3)
-                            stringColor(sdlRenderer, mps[0].tiles[end].x_o - 11, mps[0].tiles[end].y_o - 3, text, 0xff000000);
-                    }
-
-                    if(!arrived)
-                        filledCircleColor(sdlRenderer, x_soldiers[j], y_soldiers[j], soldiers_r, mps[0].tiles[start].c_color);
-
-                    else if(j == NUM_OF_SOLDIERS - 1){
-                        final_flag = 0;
-                        final_flag2 = 0;
-                        final_flag3 = 1;
-                        j_backup = 0;
-                        arrived_flag = 0;
-                        end_backup = -1;
-                        delta = 0;
-                    }
-
-                }
-            }
-            SDL_RenderPresent(sdlRenderer);
         }
-
-
-        //SDL_RenderPresent(sdlRenderer);
-        //SDL_Delay(1000 / FPS);
-
-
-        SDL_Event sdlEvent;
-        while (SDL_PollEvent(&sdlEvent)) {
-            switch (sdlEvent.type) {
-                case SDL_QUIT:
-                    shallExit = SDL_TRUE;
-                    break;
-            }
-        }
-        //SDL_RenderPresent(sdlRenderer);
-    }
 
     SDL_DestroyWindow(sdlWindow);
 

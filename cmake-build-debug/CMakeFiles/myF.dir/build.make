@@ -111,9 +111,13 @@ myF.exe: CMakeFiles/myF.dir/src/graphic.c.obj
 myF.exe: CMakeFiles/myF.dir/src/main.c.obj
 myF.exe: CMakeFiles/myF.dir/src/math.c.obj
 myF.exe: CMakeFiles/myF.dir/build.make
+myF.exe: ../sdl2/sdl2-ttf-lib/libSDL2_ttf.a
+myF.exe: ../sdl2/sdl2-ttf-lib/libSDL2_ttf.dll.a
 myF.exe: ../sdl2/sdl2-lib/libSDL2.a
 myF.exe: ../sdl2/sdl2-lib/libSDL2main.a
 myF.exe: ../sdl2/sdl2-gfx-lib/libsdl-gfx.a
+myF.exe: ../sdl2/sdl2-ttf-lib/libSDL2_ttf.a
+myF.exe: ../sdl2/sdl2-ttf-lib/libSDL2_ttf.dll.a
 myF.exe: CMakeFiles/myF.dir/linklibs.rsp
 myF.exe: CMakeFiles/myF.dir/objects1.rsp
 myF.exe: CMakeFiles/myF.dir/link.txt
