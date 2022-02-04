@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
+#include <SDL_image.h>
 
 int x0_click,y0_click;
 int x1_click,y1_click;
@@ -52,7 +53,7 @@ int click (SDL_Event event){
 }
 int is_valid_start(map mps){
     int flag1 = -1;
-    for(int i = 1; i <= NUM_OF_TILES_FOR_EACH_MAP; i++)
+    for(int i = 1; i < NUM_OF_TILES_FOR_EACH_MAP; i++)
     {
         if(x0_click <= mps.tiles[i].x2 && x0_click >= mps.tiles[i].x1 && y0_click <= mps.tiles[i].y2 && y0_click >= mps.tiles[i].y1)
         {
@@ -72,7 +73,7 @@ int is_valid_end(map mps,int start){
         return -1;
 
     int flag2 = -1;
-    for(int j = 1; j <= NUM_OF_TILES_FOR_EACH_MAP; j++)
+    for(int j = 1; j < NUM_OF_TILES_FOR_EACH_MAP; j++)
     {
         if(x1_click <= mps.tiles[j].x2 && x1_click >= mps.tiles[j].x1 && y1_click <= mps.tiles[j].y2 && y1_click >= mps.tiles[j].y1)
         {
@@ -110,8 +111,16 @@ int color_check(tile s,tile e){
     else
         return -1;
 }
-void send_soldiers(map* c,int start,int end,SDL_Renderer *sdlRenderer,double x_soldiers[MAX_NUM_OF_SOLDIERS_AT_ALL],double y_soldiers[MAX_NUM_OF_SOLDIERS_AT_ALL],int* final__flag){
-
+void send_soldiers(map* c,int start,int end,SDL_Renderer *sdlRenderer,double x_soldiers[MAX_NUM_OF_SOLDIERS_AT_ALL],double y_soldiers[MAX_NUM_OF_SOLDIERS_AT_ALL],int* final__flag,int on_potion,int tile0,int tile1,int* on_potion_pointer,int* using_potion_pointer,time_t* power_start_pointer,float* soldiers_speed_team1_pointer,float* soldiers_speed_team2_pointer,float* soldiers_speed_team3_pointer,float* soldiers_speed_team4_pointer,int power_num,int* who_is_using_potion_pointer){
+    float soldiers_speed;
+    if(c->tiles[start].team == 1)
+        soldiers_speed = soldiers_speed_team1;
+    if(c->tiles[start].team == 2)
+        soldiers_speed = soldiers_speed_team2;
+    if(c->tiles[start].team == 3)
+        soldiers_speed = soldiers_speed_team3;
+    if(c->tiles[start].team == 4)
+        soldiers_speed = soldiers_speed_team4;
 
     if(final_flag2 == 0) {
         final_flag2 = 1;
@@ -156,6 +165,11 @@ void send_soldiers(map* c,int start,int end,SDL_Renderer *sdlRenderer,double x_s
 // friend -> 1 , enemy -> -1
                     int friend_or_enemy = color_check(c->tiles[start],c->tiles[end]);
 
+                    if(*using_potion_pointer)
+                        if(power_num == 2)
+                            if(c->tiles[end].team == *who_is_using_potion_pointer)
+                                friend_or_enemy = 1;
+
                     if(friend_or_enemy == 1) {
                         if(c->tiles[end].soldiers + 2 <= MAX_NUM_OF_SOLDIERS_AT_ALL)
                             c->tiles[end].soldiers += 2;
@@ -186,6 +200,89 @@ void send_soldiers(map* c,int start,int end,SDL_Renderer *sdlRenderer,double x_s
                 }
 
                 if(!arrived_0){
+                    if(*on_potion_pointer)
+                        if(j == 0){
+                            if(potion_check(x_soldiers,y_soldiers,c->tiles[tile0],c->tiles[tile1])){
+                                if(power_num == 4){
+                                    if(c->tiles[start].team == 1) {
+                                        *who_is_using_potion_pointer = 1;
+                                    }
+                                    if(c->tiles[start].team == 2) {
+                                        *who_is_using_potion_pointer = 2;
+                                    }
+                                    if(c->tiles[start].team == 3) {
+                                        *who_is_using_potion_pointer = 3;
+                                    }
+                                    if(c->tiles[start].team == 4) {
+                                        *who_is_using_potion_pointer = 4;
+                                    }
+                                }
+                                if(power_num == 1){
+                                    if(c->tiles[start].team == 1){
+                                        *soldiers_speed_team2_pointer *= 0.3;
+                                        *soldiers_speed_team3_pointer *= 0.3;
+                                        *soldiers_speed_team4_pointer *= 0.3;
+                                        *who_is_using_potion_pointer = 1;
+                                    }
+                                    if(c->tiles[start].team == 2){
+                                        *soldiers_speed_team1_pointer *= 0.3;
+                                        *soldiers_speed_team3_pointer *= 0.3;
+                                        *soldiers_speed_team4_pointer *= 0.3;
+                                        *who_is_using_potion_pointer = 2;
+                                    }
+                                    if(c->tiles[start].team == 3){
+                                        *soldiers_speed_team1_pointer *= 0.3;
+                                        *soldiers_speed_team2_pointer *= 0.3;
+                                        *soldiers_speed_team4_pointer *= 0.3;
+                                        *who_is_using_potion_pointer = 3;
+                                    }
+                                    if(c->tiles[start].team == 4){
+                                        *soldiers_speed_team1_pointer *= 0.3;
+                                        *soldiers_speed_team2_pointer *= 0.3;
+                                        *soldiers_speed_team3_pointer *= 0.3;
+                                        *who_is_using_potion_pointer = 4;
+                                    }
+                                }
+                                if(power_num == 2){
+                                    if(c->tiles[start].team == 1) {
+                                        *who_is_using_potion_pointer = 1;
+                                    }
+                                    if(c->tiles[start].team == 2) {
+                                        *who_is_using_potion_pointer = 2;
+                                    }
+                                    if(c->tiles[start].team == 3) {
+                                        *who_is_using_potion_pointer = 3;
+                                    }
+                                    if(c->tiles[start].team == 4) {
+                                        *who_is_using_potion_pointer = 4;
+                                    }
+                                }
+                                if(power_num == 3){
+                                    V_x *= 2.5;
+                                    V_y *= 2.5;
+                                    if(c->tiles[start].team == 1) {
+                                        *soldiers_speed_team1_pointer *= 2.5;
+                                        *who_is_using_potion_pointer = 1;
+                                    }
+                                    if(c->tiles[start].team == 2) {
+                                        *soldiers_speed_team2_pointer *= 2.5;
+                                        *who_is_using_potion_pointer = 2;
+                                    }
+                                    if(c->tiles[start].team == 3) {
+                                        *soldiers_speed_team3_pointer *= 2.5;
+                                        *who_is_using_potion_pointer = 3;
+                                    }
+                                    if(c->tiles[start].team == 4) {
+                                        *soldiers_speed_team4_pointer *= 2.5;;
+                                        *who_is_using_potion_pointer = 4;
+                                    }
+                                }
+
+                                *on_potion_pointer = 0;
+                                *using_potion_pointer = 1;
+                                *power_start_pointer = time(NULL);
+                            }
+                        }
                     filledCircleColor(sdlRenderer, x_soldiers[j], y_soldiers[j], soldiers_r, c->tiles[start].c_color);
                 }
             }
@@ -207,6 +304,11 @@ void send_soldiers(map* c,int start,int end,SDL_Renderer *sdlRenderer,double x_s
                 j_backup = j + 1;
                 arrived_flag = 1;
                 int friend_or_enemy = color_check(c->tiles[start], c->tiles[end]);
+                if(*using_potion_pointer)
+                    if(power_num == 2)
+                        if(c->tiles[end].team == *who_is_using_potion_pointer)
+                            friend_or_enemy = 1;
+
                 int damage = 2;
 
                 if(j == NUM_OF_SOLDIERS - 1){
@@ -256,8 +358,81 @@ void send_soldiers(map* c,int start,int end,SDL_Renderer *sdlRenderer,double x_s
                 end_backup = -1;
                 delta = 0;
             }
-
         }
     }
     SDL_RenderPresent(sdlRenderer);
+}
+void draw_image(SDL_Renderer *sdlRenderer,tile tile0,tile tile1,int power_num)
+{
+    SDL_Texture *my_Texture;
+    if(power_num == 1)
+        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/power1.png");
+    if(power_num == 2)
+        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/power2.png");
+    if(power_num == 3)
+        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/power3.png");
+    if(power_num == 4)
+        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/power4.png");
+
+    if(!my_Texture)
+        printf("image not loaded!\n");
+
+    int w1,h1;
+    SDL_QueryTexture(my_Texture, NULL, NULL, &w1, &h1);
+    SDL_Rect texr1;
+
+    texr1.h = 23;
+    texr1.w = 30;
+
+    texr1.x = avg(tile0.x_o,tile1.x_o) - texr1.w / 2;
+    texr1.y = avg(tile0.y_o,tile1.y_o) - texr1.h / 2;
+
+    SDL_RenderCopy(sdlRenderer, my_Texture, NULL, &texr1);
+    SDL_DestroyTexture(my_Texture);
+}
+int potion_check(double x_soldiers[MAX_NUM_OF_SOLDIERS_AT_ALL],double y_soldiers[MAX_NUM_OF_SOLDIERS_AT_ALL],tile tile0,tile tile1){
+    Sint16 w = 30;
+    Sint16 h = 23;
+
+    Sint16 x_up = avg(tile0.x_o,tile1.x_o) - w / 2;
+    Sint16 x_down = avg(tile0.x_o,tile1.x_o) + w / 2;
+
+    Sint16 y_up = avg(tile0.y_o,tile1.y_o) - h / 2;
+    Sint16 y_down = avg(tile0.y_o,tile1.y_o) + h / 2;
+
+    //printf("x_up=%d  y_up=%d\nx_down=%d  y_down=%d\n",x_up,y_up,x_down,y_down);
+    //printf("x_soldiers[0]=%d  y_soldiers[0]=%d\n",(int)x_soldiers[0],(int)y_soldiers[0]);
+
+    if((int)x_soldiers[0] >= x_up && (int)x_soldiers[0] <= x_down && (int)y_soldiers[0] >= y_up && (int)y_soldiers[0] <= y_down)
+        return 1;
+    else
+        return 0;
+}
+void draw_image_2(SDL_Renderer *sdlRenderer,int power_num)
+{
+    SDL_Texture *my_Texture;
+    if(power_num == 1)
+        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/power1.png");
+    if(power_num == 2)
+        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/power2.png");
+    if(power_num == 3)
+        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/power3.png");
+    if(power_num == 4)
+        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/power4.png");
+
+    if(!my_Texture)
+        printf("image not loaded!\n");
+
+    int w1,h1;
+    SDL_QueryTexture(my_Texture, NULL, NULL, &w1, &h1);
+    SDL_Rect texr1;
+
+    texr1.h = 42;
+    texr1.w = 30;
+
+    texr1.x = 41;
+    texr1.y = 1;
+
+    SDL_RenderCopy(sdlRenderer, my_Texture, NULL, &texr1);
+    SDL_DestroyTexture(my_Texture);
 }

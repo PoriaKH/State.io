@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <SDL2_gfxPrimitives.h>
 #include <SDL_ttf.h>
+#include <SDL_image.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
@@ -23,7 +24,10 @@ const int min_width_of_tile = 70;
 const int min_height_of_tile = 70;
 const int cubes_r = 20;
 const int soldiers_r = 4;
-const int soldiers_speed = 2;
+float soldiers_speed_team1 = 0.07;
+float soldiers_speed_team2 = 0.07;
+float soldiers_speed_team3 = 0.07;
+float soldiers_speed_team4 = 0.07;
 const int NUM_OF_PLAYERS = 2;
 const int FIRST_NUM_OF_SOLDIERS = 12;
 const int FIRST_NUM_OF_SOLDIERS_TEAM_0 = 10;
@@ -319,6 +323,11 @@ void initialize_teams(map* c)
 int main()
 {
     // <----> Height
+    int flags = IMG_INIT_PNG;
+    int initStatus = IMG_Init(flags);
+    if((initStatus & flags) != flags){
+        printf("SDL_image format not available\n");
+    }
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         return 0;
@@ -469,6 +478,11 @@ int main()
 
     SDL_Renderer *sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
 
+    float soldiers_speed_team1_copy = soldiers_speed_team1;
+    float soldiers_speed_team2_copy = soldiers_speed_team2;
+    float soldiers_speed_team3_copy = soldiers_speed_team3;
+    float soldiers_speed_team4_copy = soldiers_speed_team4;
+
     int final_flag = 0;
     int final_flag_important = 0;
     int final_flag2 = 0;
@@ -487,14 +501,28 @@ int main()
     time_t time_begin = time(NULL);
     time_t time_begin_for_bots = time(NULL);
 
+    int tile0 = -1;
+    int tile1 = -1;
+    int power_num = 0;
+    int on_potion = 0;
+    int using_potion = 0;
+    int who_is_using_potion = -1;
+    int* who_is_using_potion_pointer = &who_is_using_potion;
+    int k = 1;
+    time_t power_begin = time(NULL);
+    time_t power_end_copy = 0;
+    time_t power_start = time(NULL);
 
     SDL_bool shallExit = SDL_FALSE;
     while (shallExit == SDL_FALSE) {
+        int power_flag = 0;
 
         time_t time_end = time(NULL);
+        time_t power_end = time(NULL);
 
         SDL_SetRenderDrawColor(sdlRenderer, 0xff, 0xff, 0xff, 0xff);
         SDL_RenderClear(sdlRenderer);
+
 
 
         for (int i = 1; i < NUM_OF_TILES_FOR_EACH_MAP; i++) {
@@ -525,11 +553,17 @@ int main()
                     stringColor(sdlRenderer, mps[0].tiles[i].x_o - 11, mps[0].tiles[i].y_o - 3, text, 0xff000000);
             }
 
-
             if (time_end - time_begin >= 1) {
                 if (mps[0].tiles[i].team != 0) {
                     if (mps[0].tiles[i].soldiers < MAX_NUM_OF_SOLDIERS_TO_REACH) {
-                        mps[0].tiles[i].soldiers += time_end - time_begin;
+                        if(using_potion)
+                            if(power_num == 4)
+                                if(mps[0].tiles[i].team == who_is_using_potion)
+                                    k = 3;
+                                else
+                                    k = 1;
+
+                        mps[0].tiles[i].soldiers += (time_end - time_begin) * k;
                         if(mps[0].tiles[i].soldiers > MAX_NUM_OF_SOLDIERS_TO_REACH)
                             mps[0].tiles[i].soldiers = MAX_NUM_OF_SOLDIERS_TO_REACH;
                         time_flag = 1;
@@ -545,6 +579,45 @@ int main()
                         time_flag = 1;
                     }
                 }
+            }
+        }
+//draw image
+        if(using_potion){
+            Uint32 COLOR;
+            for(int x = 1; x < NUM_OF_TILES_FOR_EACH_MAP; x++)
+                if(mps[0].tiles[x].team == who_is_using_potion)
+                    COLOR = mps[0].tiles[x].c_color;
+
+            filledCircleColor(sdlRenderer,20,20,19,COLOR);
+            draw_image_2(sdlRenderer,power_num);
+            if(power_end - power_start >= 10){
+                soldiers_speed_team1 = soldiers_speed_team1_copy;
+                soldiers_speed_team2 = soldiers_speed_team2_copy;
+                soldiers_speed_team3 = soldiers_speed_team3_copy;
+                soldiers_speed_team4 = soldiers_speed_team4_copy;
+                using_potion = 0;
+                power_begin = power_end;
+                power_end_copy = power_end;
+                k = 1;
+            }
+        }
+        if(power_end - power_begin >= 25){
+            power_begin = power_end;
+            power_end_copy = power_end;
+            tile0 = rand() % (NUM_OF_TILES_FOR_EACH_MAP-1) + 1;
+            tile1 = rand() % (NUM_OF_TILES_FOR_EACH_MAP-1) + 1;
+            while(tile1 == tile0)
+                tile1 = rand() % (NUM_OF_TILES_FOR_EACH_MAP-1) + 1;
+
+            power_num = rand() % 4 + 1;
+            on_potion = 1;
+        }
+        if(power_end - power_end_copy <= 15 && on_potion == 1){
+            draw_image(sdlRenderer,mps[0].tiles[tile0],mps[0].tiles[tile1],power_num);
+            if(power_end - power_end_copy >= 15){
+                power_end_copy = 0;
+                power_begin = power_end;
+                on_potion = 0;
             }
         }
 
@@ -612,7 +685,80 @@ int main()
                     final_flag = 1;
                     int *final__flag = &final_flag;
                     map *c = &mps[0];
-                    send_soldiers(c, s, e, sdlRenderer, x_soldiers, y_soldiers, final__flag);
+                    int* on_potion_pointer = &on_potion;
+                    int* using_potion_pointer = &using_potion;
+                    time_t* power_start_pointer = &power_start;
+                    float* soldiers_speed_team1_pointer = &soldiers_speed_team1;
+                    float* soldiers_speed_team2_pointer = &soldiers_speed_team2;
+                    float* soldiers_speed_team3_pointer = &soldiers_speed_team3;
+                    float* soldiers_speed_team4_pointer = &soldiers_speed_team4;
+
+                    send_soldiers(c, s, e, sdlRenderer, x_soldiers, y_soldiers, final__flag,on_potion,tile0,tile1,on_potion_pointer,using_potion_pointer,power_start_pointer,soldiers_speed_team1_pointer,soldiers_speed_team2_pointer,soldiers_speed_team3_pointer,soldiers_speed_team4_pointer,power_num,who_is_using_potion_pointer);
+
+
+                    if(on_potion)
+                        if(potion_check(x_soldiers,y_soldiers,mps[0].tiles[tile0],mps[0].tiles[tile1])){
+                            if(power_num == 4){
+                                if(mps[0].tiles[s].team == 2) {
+                                    who_is_using_potion = 2;
+                                }
+                                if(mps[0].tiles[s].team == 3) {
+                                    who_is_using_potion = 3;
+                                }
+                                if(mps[0].tiles[s].team == 4) {
+                                    who_is_using_potion = 4;
+                                }
+                            }
+                            if(power_num == 2){
+                                if(mps[0].tiles[s].team == 2) {
+                                    who_is_using_potion = 2;
+                                }
+                                if(mps[0].tiles[s].team == 3) {
+                                    who_is_using_potion = 3;
+                                }
+                                if(mps[0].tiles[s].team == 4) {
+                                    who_is_using_potion = 4;
+                                }
+                            }
+                            if(power_num == 3){
+                                if(mps[0].tiles[s].team == 2) {
+                                    soldiers_speed_team2 *= 2.5;
+                                    who_is_using_potion = 2;
+                                }
+                                if(mps[0].tiles[s].team == 3) {
+                                    soldiers_speed_team3 *= 2.5;
+                                    who_is_using_potion = 3;
+                                }
+                                if(mps[0].tiles[s].team == 4) {
+                                    soldiers_speed_team4 *= 2.5;
+                                    who_is_using_potion = 4;
+                                }
+                            }
+                            if(power_num == 1){
+                                if(mps[0].tiles[s].team == 2){
+                                    soldiers_speed_team1 *= 0.3;
+                                    soldiers_speed_team3 *= 0.3;
+                                    soldiers_speed_team4 *= 0.3;
+                                    who_is_using_potion = 2;
+                                }
+                                if(mps[0].tiles[s].team == 3){
+                                    soldiers_speed_team1 *= 0.3;
+                                    soldiers_speed_team2 *= 0.3;
+                                    soldiers_speed_team4 *= 0.3;
+                                    who_is_using_potion = 3;
+                                }
+                                if(mps[0].tiles[s].team == 4){
+                                    soldiers_speed_team1 *= 0.3;
+                                    soldiers_speed_team2 *= 0.3;
+                                    soldiers_speed_team3 *= 0.3;
+                                    who_is_using_potion = 4;
+                                }
+                            }
+                            on_potion = 0;
+                            using_potion = 1;
+                            power_start = time(NULL);
+                        }
+
                     if (final_flag == 0) {
                         time_begin_for_bots = time(NULL);
                         s = -1;
@@ -667,7 +813,79 @@ int main()
                     final_flag = 1;
                     int *final__flag = &final_flag;
                     map *c = &mps[0];
-                    send_soldiers(c, s, e, sdlRenderer, x_soldiers, y_soldiers, final__flag);
+                    int* on_potion_pointer = &on_potion;
+                    int* using_potion_pointer = &using_potion;
+                    time_t* power_start_pointer = &power_start;
+                    float* soldiers_speed_team1_pointer = &soldiers_speed_team1;
+                    float* soldiers_speed_team2_pointer = &soldiers_speed_team2;
+                    float* soldiers_speed_team3_pointer = &soldiers_speed_team3;
+                    float* soldiers_speed_team4_pointer = &soldiers_speed_team4;
+
+                    send_soldiers(c, s, e, sdlRenderer, x_soldiers, y_soldiers, final__flag,on_potion,tile0,tile1,on_potion_pointer,using_potion_pointer,power_start_pointer,soldiers_speed_team1_pointer,soldiers_speed_team2_pointer,soldiers_speed_team3_pointer,soldiers_speed_team4_pointer,power_num,who_is_using_potion_pointer);
+
+                    if(on_potion)
+                        if(potion_check(x_soldiers,y_soldiers,mps[0].tiles[tile0],mps[0].tiles[tile1])){
+                            if(power_num == 4) {
+                                if(mps[0].tiles[s].team == 2) {
+                                    who_is_using_potion = 2;
+                                }
+                                if(mps[0].tiles[s].team == 3) {
+                                    who_is_using_potion = 3;
+                                }
+                                if(mps[0].tiles[s].team == 4) {
+                                    who_is_using_potion = 4;
+                                }
+                            }
+                            if(power_num == 2){
+                                if(mps[0].tiles[s].team == 2) {
+                                    who_is_using_potion = 2;
+                                }
+                                if(mps[0].tiles[s].team == 3) {
+                                    who_is_using_potion = 3;
+                                }
+                                if(mps[0].tiles[s].team == 4) {
+                                    who_is_using_potion = 4;
+                                }
+                            }
+                            if(power_num == 3){
+                                if(mps[0].tiles[s].team == 2) {
+                                    soldiers_speed_team2 *= 2.5;
+                                    who_is_using_potion = 2;
+                                }
+                                if(mps[0].tiles[s].team == 3) {
+                                    soldiers_speed_team3 *= 2.5;
+                                    who_is_using_potion = 3;
+                                }
+                                if(mps[0].tiles[s].team == 4) {
+                                    soldiers_speed_team4 *= 2.5;
+                                    who_is_using_potion = 4;
+                                }
+                            }
+                            if(power_num == 1){
+                                if(mps[0].tiles[s].team == 2){
+                                    soldiers_speed_team1 *= 0.3;
+                                    soldiers_speed_team3 *= 0.3;
+                                    soldiers_speed_team4 *= 0.3;
+                                    who_is_using_potion = 2;
+                                }
+                                if(mps[0].tiles[s].team == 3){
+                                    soldiers_speed_team1 *= 0.3;
+                                    soldiers_speed_team2 *= 0.3;
+                                    soldiers_speed_team4 *= 0.3;
+                                    who_is_using_potion = 3;
+                                }
+                                if(mps[0].tiles[s].team == 4){
+                                    soldiers_speed_team1 *= 0.3;
+                                    soldiers_speed_team2 *= 0.3;
+                                    soldiers_speed_team3 *= 0.3;
+                                    who_is_using_potion = 4;
+                                }
+                            }
+                            on_potion = 0;
+                            using_potion = 1;
+                            power_start = time(NULL);
+                        }
+
                     if (final_flag == 0) {
                         time_begin_for_bots = time(NULL);
                         s = -1;
@@ -722,7 +940,78 @@ int main()
                     final_flag = 1;
                     int *final__flag = &final_flag;
                     map *c = &mps[0];
-                    send_soldiers(c, s, e, sdlRenderer, x_soldiers, y_soldiers, final__flag);
+                    int* on_potion_pointer = &on_potion;
+                    int* using_potion_pointer = &using_potion;
+                    time_t* power_start_pointer = &power_start;
+                    float* soldiers_speed_team1_pointer = &soldiers_speed_team1;
+                    float* soldiers_speed_team2_pointer = &soldiers_speed_team2;
+                    float* soldiers_speed_team3_pointer = &soldiers_speed_team3;
+                    float* soldiers_speed_team4_pointer = &soldiers_speed_team4;
+
+                    send_soldiers(c, s, e, sdlRenderer, x_soldiers, y_soldiers, final__flag,on_potion,tile0,tile1,on_potion_pointer,using_potion_pointer,power_start_pointer,soldiers_speed_team1_pointer,soldiers_speed_team2_pointer,soldiers_speed_team3_pointer,soldiers_speed_team4_pointer,power_num,who_is_using_potion_pointer);
+                    if(on_potion)
+                        if(potion_check(x_soldiers,y_soldiers,mps[0].tiles[tile0],mps[0].tiles[tile1])){
+                            if(power_num == 4){
+                                if(mps[0].tiles[s].team == 2) {
+                                    who_is_using_potion = 2;
+                                }
+                                if(mps[0].tiles[s].team == 3) {
+                                    who_is_using_potion = 3;
+                                }
+                                if(mps[0].tiles[s].team == 4) {
+                                    who_is_using_potion = 4;
+                                }
+                            }
+                            if(power_num == 2){
+                                if(mps[0].tiles[s].team == 2) {
+                                    who_is_using_potion = 2;
+                                }
+                                if(mps[0].tiles[s].team == 3) {
+                                    who_is_using_potion = 3;
+                                }
+                                if(mps[0].tiles[s].team == 4) {
+                                    who_is_using_potion = 4;
+                                }
+                            }
+                            if(power_num == 3){
+                                if(mps[0].tiles[s].team == 2) {
+                                    soldiers_speed_team2 *= 2.5;
+                                    who_is_using_potion = 2;
+                                }
+                                if(mps[0].tiles[s].team == 3) {
+                                    soldiers_speed_team3 *= 2.5;
+                                    who_is_using_potion = 3;
+                                }
+                                if(mps[0].tiles[s].team == 4) {
+                                    soldiers_speed_team4 *= 2.5;
+                                    who_is_using_potion = 4;
+                                }
+                            }
+                            if(power_num == 1){
+                                if(mps[0].tiles[s].team == 2){
+                                    soldiers_speed_team1 *= 0.3;
+                                    soldiers_speed_team3 *= 0.3;
+                                    soldiers_speed_team4 *= 0.3;
+                                    who_is_using_potion = 2;
+                                }
+                                if(mps[0].tiles[s].team == 3){
+                                    soldiers_speed_team1 *= 0.3;
+                                    soldiers_speed_team2 *= 0.3;
+                                    soldiers_speed_team4 *= 0.3;
+                                    who_is_using_potion = 3;
+                                }
+                                if(mps[0].tiles[s].team == 4){
+                                    soldiers_speed_team1 *= 0.3;
+                                    soldiers_speed_team2 *= 0.3;
+                                    soldiers_speed_team3 *= 0.3;
+                                    who_is_using_potion = 4;
+                                }
+                            }
+                            on_potion = 0;
+                            using_potion = 1;
+                            power_start = time(NULL);
+                        }
+
                     if (final_flag == 0) {
                         time_begin_for_bots = time(NULL);
                         s = -1;
@@ -754,7 +1043,95 @@ int main()
                 //printf("tooye click\n");
                 int *final__flag = &final_flag;
                 map *c = &mps[0];
-                send_soldiers(c, start, end, sdlRenderer, x_soldiers, y_soldiers, final__flag);
+                int* on_potion_pointer = &on_potion;
+                int* using_potion_pointer = &using_potion;
+                time_t* power_start_pointer = &power_start;
+                float* soldiers_speed_team1_pointer = &soldiers_speed_team1;
+                float* soldiers_speed_team2_pointer = &soldiers_speed_team2;
+                float* soldiers_speed_team3_pointer = &soldiers_speed_team3;
+                float* soldiers_speed_team4_pointer = &soldiers_speed_team4;
+
+                send_soldiers(c, start, end, sdlRenderer, x_soldiers, y_soldiers, final__flag,on_potion,tile0,tile1,on_potion_pointer,using_potion_pointer,power_start_pointer,soldiers_speed_team1_pointer,soldiers_speed_team2_pointer,soldiers_speed_team3_pointer,soldiers_speed_team4_pointer,power_num,who_is_using_potion_pointer);
+
+                if(on_potion)
+                    if(potion_check(x_soldiers,y_soldiers,mps[0].tiles[tile0],mps[0].tiles[tile1])){
+                        if(power_num == 4){
+                            if(mps[0].tiles[start].team == 1) {
+                                who_is_using_potion = 1;
+                            }
+                            if(mps[0].tiles[start].team == 2) {
+                                who_is_using_potion = 2;
+                            }
+                            if(mps[0].tiles[start].team == 3) {
+                                who_is_using_potion = 3;
+                            }
+                            if(mps[0].tiles[start].team == 4) {
+                                who_is_using_potion = 4;
+                            }
+                        }
+                        if(power_num == 2){
+                            if(mps[0].tiles[start].team == 1) {
+                                who_is_using_potion = 1;
+                            }
+                            if(mps[0].tiles[start].team == 2) {
+                                who_is_using_potion = 2;
+                            }
+                            if(mps[0].tiles[start].team == 3) {
+                                who_is_using_potion = 3;
+                            }
+                            if(mps[0].tiles[start].team == 4) {
+                                who_is_using_potion = 4;
+                            }
+                        }
+                        if(power_num == 3){
+                            if(mps[0].tiles[start].team == 1) {
+                                soldiers_speed_team1 *= 2.5;
+                                who_is_using_potion = 1;
+                            }
+                            if(mps[0].tiles[start].team == 2) {
+                                soldiers_speed_team2 *= 2.5;
+                                who_is_using_potion = 2;
+                            }
+                            if(mps[0].tiles[start].team == 3) {
+                                soldiers_speed_team3 *= 2.5;
+                                who_is_using_potion = 3;
+                            }
+                            if(mps[0].tiles[start].team == 4) {
+                                soldiers_speed_team4 *= 2.5;
+                                who_is_using_potion = 4;
+                            }
+                        }
+                        if(power_num == 1){
+                            if(mps[0].tiles[start].team == 1){
+                                soldiers_speed_team2 *= 0.3;
+                                soldiers_speed_team3 *= 0.3;
+                                soldiers_speed_team4 *= 0.3;
+                                who_is_using_potion = 1;
+                            }
+                            if(mps[0].tiles[start].team == 2){
+                                soldiers_speed_team1 *= 0.3;
+                                soldiers_speed_team3 *= 0.3;
+                                soldiers_speed_team4 *= 0.3;
+                                who_is_using_potion = 2;
+                            }
+                            if(mps[0].tiles[start].team == 3){
+                                soldiers_speed_team1 *= 0.3;
+                                soldiers_speed_team2 *= 0.3;
+                                soldiers_speed_team4 *= 0.3;
+                                who_is_using_potion = 3;
+                            }
+                            if(mps[0].tiles[start].team == 4){
+                                soldiers_speed_team1 *= 0.3;
+                                soldiers_speed_team2 *= 0.3;
+                                soldiers_speed_team3 *= 0.3;
+                                who_is_using_potion = 4;
+                            }
+                        }
+                        on_potion = 0;
+                        using_potion = 1;
+                        power_start = time(NULL);
+                    }
+
                 if(final_flag == 0)
                     final_flag_important = 0;
             }
@@ -770,9 +1147,12 @@ int main()
                         break;
                 }
             }
+
         }
 
     SDL_DestroyWindow(sdlWindow);
+
+    IMG_Quit();
 
     SDL_Quit();
     return 0;
