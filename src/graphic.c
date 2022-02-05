@@ -10,7 +10,8 @@
 #include <stdbool.h>
 #include <time.h>
 #include <SDL_image.h>
-
+#include <string.h>
+#include <SDL_ttf.h>
 int x0_click,y0_click;
 int x1_click,y1_click;
 int LEN_BETWEEN_SOLDIERS = 10;
@@ -21,7 +22,21 @@ int j_backup = 0;
 int end_backup = -1;
 int delta = 0;
 int time_flag = 0;
-
+int y_pointer = 324;
+int x_pointer = 530;
+int y_pointer_2 = 324;
+char name[25];
+int onmenu = 1;
+int on_get_players = 1;
+int ongetname = 1;
+int on_maps = 0;
+int on_map0 = 0;
+int on_map1 = 0;
+int on_map2 = 0;
+int on_leaderboard = 0;
+int on__exit = 0;
+int start_game = 0;
+TTF_Font* font;
 void drawBox(SDL_Renderer *sdlRenderer, int x, int y, Uint32 color) {
     Sint16 width1 = 1000 * y / 8;
     Sint16 height1 = 800 * x / 8;
@@ -366,13 +381,13 @@ void draw_image(SDL_Renderer *sdlRenderer,tile tile0,tile tile1,int power_num)
 {
     SDL_Texture *my_Texture;
     if(power_num == 1)
-        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/power1.png");
+        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/potions/power1.png");
     if(power_num == 2)
-        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/power2.png");
+        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/potions/power2.png");
     if(power_num == 3)
-        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/power3.png");
+        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/potions/power3.png");
     if(power_num == 4)
-        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/power4.png");
+        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/potions/power4.png");
 
     if(!my_Texture)
         printf("image not loaded!\n");
@@ -412,13 +427,13 @@ void draw_image_2(SDL_Renderer *sdlRenderer,int power_num)
 {
     SDL_Texture *my_Texture;
     if(power_num == 1)
-        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/power1.png");
+        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/potions/power1.png");
     if(power_num == 2)
-        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/power2.png");
+        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/potions/power2.png");
     if(power_num == 3)
-        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/power3.png");
+        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/potions/power3.png");
     if(power_num == 4)
-        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/power4.png");
+        my_Texture = IMG_LoadTexture(sdlRenderer,"../images/potions/power4.png");
 
     if(!my_Texture)
         printf("image not loaded!\n");
@@ -435,4 +450,345 @@ void draw_image_2(SDL_Renderer *sdlRenderer,int power_num)
 
     SDL_RenderCopy(sdlRenderer, my_Texture, NULL, &texr1);
     SDL_DestroyTexture(my_Texture);
+}
+void draw_image_final(SDL_Renderer *sdlRenderer,int xp,int yp,char* address,int width,int height)
+{
+    int n = strlen(address);
+    char char_array[n + 1];
+
+    strcpy(char_array, address);
+    SDL_Texture *myTexture;
+    myTexture = IMG_LoadTexture(sdlRenderer, char_array);
+    if(!myTexture)
+        printf("image not loaded !\n");
+
+    int w1,h1;
+    SDL_QueryTexture(myTexture,NULL,NULL,&w1,&h1);
+    SDL_Rect texr1;
+    texr1.x = xp;
+    texr1.y = yp;
+    texr1.w = width;
+    texr1.h = height;
+    SDL_RenderCopy(sdlRenderer, myTexture, NULL, &texr1);
+    SDL_DestroyTexture(myTexture);
+}
+void mainmenu_event(int* y_pointer) {
+    if (onmenu == 1 && on_get_players == 0){
+        SDL_Event e;
+        SDL_PollEvent(&e);
+        if (e.type == SDL_KEYDOWN) {
+            switch (e.key.keysym.sym) {
+                case SDLK_DOWN:
+                    if (*y_pointer != 464)
+                        *y_pointer += 70;
+                    break;
+                case SDLK_UP:
+                    if (*y_pointer != 324)
+                        *y_pointer -= 70;
+                    break;
+                case SDLK_RETURN:
+                    switch (*y_pointer) {
+                        case 324:
+                            onmenu = 0;
+                            on_maps = 1;
+                            break;
+                        case 394:
+                            onmenu = 0;
+                            on_leaderboard = 1;
+                            break;
+                        case 464:
+                            onmenu = 0;
+                            on__exit = 1;
+                            start_game = 1;
+                    }
+            }
+        }
+    } if (on_maps) {
+        SDL_Event e;
+        SDL_PollEvent(&e);
+            if (e.type == SDL_KEYDOWN) {
+                switch (e.key.keysym.sym) {
+                    case SDLK_DOWN:
+                        if (*y_pointer != 534)
+                            *y_pointer += 70;
+                        break;
+                    case SDLK_UP:
+                        if (*y_pointer != 324)
+                            *y_pointer -= 70;
+                        break;
+                    case SDLK_BACKSPACE:
+                        on_maps = 0;
+                        onmenu = 1;
+                        *y_pointer = 324;
+                        break;
+                        case SDLK_SPACE: {
+
+                        printf("yes\n");
+                            if (*y_pointer == 324) {
+                                on_map0 = 1;
+                                on_maps = 0;
+                            }
+                            if (*y_pointer == 394) {
+                                on_map1 = 1;
+                                on_maps = 0;
+                            } else if (*y_pointer == 464) {
+                                on_map2 = 1;
+                                on_maps = 0;
+                            } else if (*y_pointer == 534) {
+                                int n = rand() % 3;
+                                if (n == 0) {
+                                    on_map0 = 1;
+                                    on_maps = 0;
+                                } else if (n == 1) {
+                                    on_map1 = 1;
+                                    on_maps = 0;
+                                } else if (n == 2) {
+                                    on_map2 = 1;
+                                    on_maps = 0;
+                                }
+                            }
+                            break;
+                        }
+                }
+            }
+        }
+    if(on_map0){
+        SDL_Event e;
+        SDL_PollEvent(&e);
+        if(e.key.keysym.sym == SDLK_BACKSPACE){
+            on_maps = 1;
+            on_map0 = 0;
+        }
+        if(e.key.keysym.sym == SDLK_RETURN){
+            the_chosen_map = 0;
+            on_map0 = 0;
+            onmenu = 0;
+            start_game = 1;
+        }
+    }
+    if(on_map1) {
+        SDL_Event e;
+        SDL_PollEvent(&e);
+        if (e.key.keysym.sym == SDLK_BACKSPACE) {
+            on_maps = 1;
+            on_map1 = 0;
+        }
+        if(e.key.keysym.sym == SDLK_RETURN){
+            the_chosen_map = 1;
+            on_map1 = 0;
+            onmenu = 0;
+            start_game = 1;
+        }
+    }
+    if(on_map2) {
+        SDL_Event e;
+        SDL_PollEvent(&e);
+        if (e.key.keysym.sym == SDLK_BACKSPACE) {
+            on_maps = 1;
+            on_map2 = 0;
+        }
+        if(e.key.keysym.sym == SDLK_RETURN){
+            the_chosen_map = 2;
+            on_map2 = 0;
+            onmenu = 0;
+            start_game = 1;
+        }
+    }
+    if(on_get_players == 1){
+        SDL_Event e;
+        SDL_PollEvent(&e);
+        if (e.type == SDL_KEYDOWN) {
+            switch (e.key.keysym.sym) {
+                case SDLK_DOWN:
+                    if (*y_pointer != 464)
+                        *y_pointer += 70;
+                    break;
+                case SDLK_UP:
+                    if (*y_pointer != 324)
+                        *y_pointer -= 70;
+                    break;
+                case SDLK_RETURN:
+                    switch (*y_pointer) {
+                        case 324:
+                            on_get_players = 0;
+                            NUM_OF_PLAYERS = 2;
+                            break;
+                        case 394:
+                            on_get_players = 0;
+                            NUM_OF_PLAYERS = 3;
+                            break;
+                        case 464:
+                            on_get_players = 0;
+                            NUM_OF_PLAYERS = 4;
+                    }
+            }
+        }
+    }
+}
+void show_map(SDL_Renderer* sdlRenderer,int map_num,map mps[]){
+    for(int i = 1; i < NUM_OF_TILES_FOR_EACH_MAP; i++) {
+        boxColor(sdlRenderer, mps[map_num].tiles[i].x1, mps[map_num].tiles[i].y1, mps[map_num].tiles[i].x2, mps[map_num].tiles[i].y2,mps[map_num].tiles[i].b_color);
+        filledCircleColor(sdlRenderer, mps[map_num].tiles[i].x_o, mps[map_num].tiles[i].y_o, cubes_r, mps[map_num].tiles[i].c_color);
+    }
+    SDL_RenderPresent(sdlRenderer);
+}
+void choose_players(SDL_Renderer* sdlRenderer)
+{
+    int* y_pointer_2_ptr = & y_pointer_2;
+    while(on_get_players) {
+        mainmenu_event(y_pointer_2_ptr);
+        draw_image_final(sdlRenderer, 0, 0, "../images/menu/menu.jpg", 800, 800);
+        draw_image_final(sdlRenderer, 300, 295, "../images/menu/1.png", 200, 58);
+        draw_image_final(sdlRenderer, 300, 365, "../images/menu/2.png", 200, 58);
+        draw_image_final(sdlRenderer, 300, 435, "../images/menu/3.png", 200, 58);
+        draw_image_final(sdlRenderer,227,20,"../images/menu/enternum.png",345,44);
+        filledCircleRGBA(sdlRenderer, x_pointer, y_pointer_2, 24, 255, 0, 0, 255);
+        SDL_RenderPresent(sdlRenderer);
+    }
+}
+void mainmenu(SDL_Renderer* sdlRenderer,map mps[])
+{
+    font = TTF_OpenFont("../fonts/arial.ttf",50);
+    int maxLen = 17;
+    int editingName = 0;
+//    TTF_Font* font = TTF_OpenFont("../fonts/arial.ttf",50);
+    if(!font)
+        printf("font not loaded\n");
+    SDL_Color color = {0,0,0};
+
+    SDL_StartTextInput();
+    while(!start_game) {
+        int *y_pointer_ptr = &y_pointer;
+
+        while (ongetname) {
+            draw_image_final(sdlRenderer, 0, 0, "../images/menu/menu.jpg", 800, 800);
+            SDL_Event Event;
+            SDL_Surface *surfaceName;
+            if (strlen(name) == 0) {
+                surfaceName = TTF_RenderText_Solid(font, "Enter your name ...", color);
+            }
+            if (strlen(name) > 0) {
+                surfaceName = TTF_RenderText_Solid(font, name, color);
+            }
+            int nameW = 0;
+            int nameH = 0;
+            int nameX = 50;
+            int nameY = 100;
+            SDL_Texture *textureName = SDL_CreateTextureFromSurface(sdlRenderer, surfaceName);
+            SDL_QueryTexture(textureName, NULL, NULL, &nameW, &nameH);
+
+            SDL_Rect dstrectName = {nameX, nameY, nameW, nameH};
+
+
+            SDL_Rect borderName;
+            borderName.x = nameX;
+            borderName.y = nameY;
+            borderName.w = nameW;
+            borderName.h = nameH;
+
+            SDL_Color colorBorder1;
+            if (editingName == true) {
+                colorBorder1.r = 255;
+                colorBorder1.g = 255;
+                colorBorder1.b = 0;
+                colorBorder1.a = 255;
+            }
+            if (editingName == false && strlen(name) == 0) {
+                colorBorder1.r = 255;
+                colorBorder1.g = 0;
+                colorBorder1.b = 0;
+                colorBorder1.a = 255;
+            }
+            if (editingName == false && strlen(name) > 0) {
+                colorBorder1.r = 0;
+                colorBorder1.g = 255;
+                colorBorder1.b = 0;
+                colorBorder1.a = 255;
+            }
+            SDL_SetRenderDrawColor(sdlRenderer, colorBorder1.r, colorBorder1.g, colorBorder1.b, colorBorder1.a);
+            SDL_RenderFillRect(sdlRenderer, &borderName);
+
+
+            SDL_RenderCopy(sdlRenderer, textureName, NULL, &dstrectName);
+
+
+            while (SDL_PollEvent(&Event)) {
+                if (Event.type == SDL_MOUSEBUTTONDOWN) {
+                    if (Event.button.button == SDL_BUTTON_LEFT) {
+                        if (Event.button.x > nameX && Event.button.x < nameX + nameW && Event.button.y > nameY &&
+                            Event.button.y < nameY + nameH) {
+
+                            editingName = true;
+                        }
+                    }
+                }
+                if (Event.type == SDL_KEYDOWN && Event.key.keysym.sym == SDLK_RETURN && editingName == false &&
+                    strlen(name) > 0) {
+                    ongetname = false;
+                } else if ((Event.type == SDL_TEXTINPUT || Event.type == SDL_KEYDOWN) && editingName == true) {
+                    if (Event.type == SDL_KEYDOWN && Event.key.keysym.sym == SDLK_RETURN && strlen(name) > 0) {
+//                    renderInformation(filestr, name1, 1);
+                        SDL_DestroyTexture(textureName);
+                        SDL_FreeSurface(surfaceName);
+                        editingName = false;
+                        //running = false;
+                    }
+                    if (Event.type == SDL_KEYDOWN && Event.key.keysym.sym == SDLK_BACKSPACE && strlen(name) > 0 &&
+                        strlen(name) <= maxLen) {
+                        name[strlen(name) - 1] = '\0';
+                    } else if (Event.type == SDL_TEXTINPUT && strlen(name) < maxLen) {
+                        name[strlen(name)] = Event.text.text[0];
+                        name[strlen(name) + 1] = '\0';
+                    }
+                }
+            }
+            if (editingName == false && strlen(name) > 0) {
+                //renderInformation(filestr, name1, 1);
+            }
+            SDL_RenderPresent(sdlRenderer);
+
+        }
+        while (onmenu) {
+            mainmenu_event(y_pointer_ptr);
+            draw_image_final(sdlRenderer, 0, 0, "../images/menu/menu.jpg", 800, 800);
+            draw_image_final(sdlRenderer, 300, 295, "../images/menu/maps.png", 200, 58);
+            draw_image_final(sdlRenderer, 300, 365, "../images/menu/leaderboard.png", 200, 58);
+            draw_image_final(sdlRenderer, 300, 435, "../images/menu/exit.png", 200, 58);
+            filledCircleRGBA(sdlRenderer, x_pointer, y_pointer, 24, 255, 0, 0, 255);
+            SDL_RenderPresent(sdlRenderer);
+
+        }
+        while (on_maps) {
+            mainmenu_event(y_pointer_ptr);
+            draw_image_final(sdlRenderer, 0, 0, "../images/menu/menu.jpg", 800, 800);
+            draw_image_final(sdlRenderer, 300, 295, "../images/menu/map1.png", 200, 58);
+            draw_image_final(sdlRenderer, 300, 365, "../images/menu/map2.png", 200, 58);
+            draw_image_final(sdlRenderer, 300, 435, "../images/menu/map3.png", 200, 58);
+            draw_image_final(sdlRenderer, 300, 505, "../images/menu/random.png", 200, 58);
+            draw_image_final(sdlRenderer,227,20,"../images/menu/pressspace.png",345,44);
+            filledCircleRGBA(sdlRenderer, x_pointer, y_pointer, 24, 255, 0, 0, 255);
+            SDL_RenderPresent(sdlRenderer);
+        }
+        while(on_map0){
+            mainmenu_event(y_pointer_ptr);
+            //draw_image_final(sdlRenderer, 0, 0, "../images/menu/menu.jpg", 800, 800);
+            SDL_SetRenderDrawColor(sdlRenderer, 0xff, 0xff, 0xff, 0xff);
+            SDL_RenderClear(sdlRenderer);
+            show_map(sdlRenderer,0,mps);
+        }
+        while(on_map1){
+            mainmenu_event(y_pointer_ptr);
+            //draw_image_final(sdlRenderer, 0, 0, "../images/menu/menu.jpg", 800, 800);
+            SDL_SetRenderDrawColor(sdlRenderer, 0xff, 0xff, 0xff, 0xff);
+            SDL_RenderClear(sdlRenderer);
+            show_map(sdlRenderer,1,mps);
+        }
+        while(on_map2){
+            mainmenu_event(y_pointer_ptr);
+            //draw_image_final(sdlRenderer, 0, 0, "../images/menu/menu.jpg", 800, 800);
+            SDL_SetRenderDrawColor(sdlRenderer, 0xff, 0xff, 0xff, 0xff);
+            SDL_RenderClear(sdlRenderer);
+            show_map(sdlRenderer,2,mps);
+        }
+    }
 }
