@@ -37,6 +37,7 @@ int on_leaderboard = 0;
 int on__exit = 0;
 int start_game = 0;
 TTF_Font* font;
+TTF_Font* font2;
 void drawBox(SDL_Renderer *sdlRenderer, int x, int y, Uint32 color) {
     Sint16 width1 = 1000 * y / 8;
     Sint16 height1 = 800 * x / 8;
@@ -415,8 +416,6 @@ int potion_check(double x_soldiers[MAX_NUM_OF_SOLDIERS_AT_ALL],double y_soldiers
     Sint16 y_up = avg(tile0.y_o,tile1.y_o) - h / 2;
     Sint16 y_down = avg(tile0.y_o,tile1.y_o) + h / 2;
 
-    //printf("x_up=%d  y_up=%d\nx_down=%d  y_down=%d\n",x_up,y_up,x_down,y_down);
-    //printf("x_soldiers[0]=%d  y_soldiers[0]=%d\n",(int)x_soldiers[0],(int)y_soldiers[0]);
 
     if((int)x_soldiers[0] >= x_up && (int)x_soldiers[0] <= x_down && (int)y_soldiers[0] >= y_up && (int)y_soldiers[0] <= y_down)
         return 1;
@@ -473,6 +472,22 @@ void draw_image_final(SDL_Renderer *sdlRenderer,int xp,int yp,char* address,int 
     SDL_DestroyTexture(myTexture);
 }
 void mainmenu_event(int* y_pointer) {
+    if(on_leaderboard){
+        SDL_Event e;
+        SDL_PollEvent(&e);
+        if (e.type == SDL_KEYDOWN) {
+            switch (e.key.keysym.sym) {
+                case SDLK_BACKSPACE:
+                    on_leaderboard = 0;
+                    onmenu = 1;
+                    break;
+                case SDLK_ESCAPE:
+                    on_leaderboard = 0;
+                    onmenu = 1;
+                    break;
+            }
+        }
+    }
     if (onmenu == 1 && on_get_players == 0){
         SDL_Event e;
         SDL_PollEvent(&e);
@@ -523,7 +538,6 @@ void mainmenu_event(int* y_pointer) {
                         break;
                         case SDLK_SPACE: {
 
-                        printf("yes\n");
                             if (*y_pointer == 324) {
                                 on_map0 = 1;
                                 on_maps = 0;
@@ -646,15 +660,32 @@ void choose_players(SDL_Renderer* sdlRenderer)
         SDL_RenderPresent(sdlRenderer);
     }
 }
+void create_text(SDL_Renderer *sdlRenderer,char* text,int x_text,int y_text,SDL_Color color)
+{
+    SDL_Surface *my_surface = TTF_RenderText_Solid(font2, text,color);
+    SDL_Texture *my_texture = SDL_CreateTextureFromSurface(sdlRenderer,my_surface);
+    int texW = 0;
+    int texH = 0;
+    SDL_QueryTexture(my_texture,NULL,NULL,&texW,&texH);
+    SDL_Rect dstrec = {x_text,y_text,texW,texH};
+
+    SDL_RenderCopy(sdlRenderer,my_texture,NULL,&dstrec);
+
+    SDL_DestroyTexture(my_texture);
+    SDL_FreeSurface(my_surface);
+}
 void mainmenu(SDL_Renderer* sdlRenderer,map mps[])
 {
     font = TTF_OpenFont("../fonts/arial.ttf",50);
+    font2 = TTF_OpenFont("../fonts/arial.ttf",35);
     int maxLen = 17;
     int editingName = 0;
-//    TTF_Font* font = TTF_OpenFont("../fonts/arial.ttf",50);
+
     if(!font)
         printf("font not loaded\n");
     SDL_Color color = {0,0,0};
+    SDL_Color color2 = {255,255,0};
+    SDL_Color color3 = {255,255,255};
 
     SDL_StartTextInput();
     while(!start_game) {
@@ -727,11 +758,9 @@ void mainmenu(SDL_Renderer* sdlRenderer,map mps[])
                     ongetname = false;
                 } else if ((Event.type == SDL_TEXTINPUT || Event.type == SDL_KEYDOWN) && editingName == true) {
                     if (Event.type == SDL_KEYDOWN && Event.key.keysym.sym == SDLK_RETURN && strlen(name) > 0) {
-//                    renderInformation(filestr, name1, 1);
                         SDL_DestroyTexture(textureName);
                         SDL_FreeSurface(surfaceName);
                         editingName = false;
-                        //running = false;
                     }
                     if (Event.type == SDL_KEYDOWN && Event.key.keysym.sym == SDLK_BACKSPACE && strlen(name) > 0 &&
                         strlen(name) <= maxLen) {
@@ -741,9 +770,6 @@ void mainmenu(SDL_Renderer* sdlRenderer,map mps[])
                         name[strlen(name) + 1] = '\0';
                     }
                 }
-            }
-            if (editingName == false && strlen(name) > 0) {
-                //renderInformation(filestr, name1, 1);
             }
             SDL_RenderPresent(sdlRenderer);
 
@@ -771,24 +797,61 @@ void mainmenu(SDL_Renderer* sdlRenderer,map mps[])
         }
         while(on_map0){
             mainmenu_event(y_pointer_ptr);
-            //draw_image_final(sdlRenderer, 0, 0, "../images/menu/menu.jpg", 800, 800);
             SDL_SetRenderDrawColor(sdlRenderer, 0xff, 0xff, 0xff, 0xff);
             SDL_RenderClear(sdlRenderer);
             show_map(sdlRenderer,0,mps);
         }
         while(on_map1){
             mainmenu_event(y_pointer_ptr);
-            //draw_image_final(sdlRenderer, 0, 0, "../images/menu/menu.jpg", 800, 800);
             SDL_SetRenderDrawColor(sdlRenderer, 0xff, 0xff, 0xff, 0xff);
             SDL_RenderClear(sdlRenderer);
             show_map(sdlRenderer,1,mps);
         }
         while(on_map2){
             mainmenu_event(y_pointer_ptr);
-            //draw_image_final(sdlRenderer, 0, 0, "../images/menu/menu.jpg", 800, 800);
             SDL_SetRenderDrawColor(sdlRenderer, 0xff, 0xff, 0xff, 0xff);
             SDL_RenderClear(sdlRenderer);
             show_map(sdlRenderer,2,mps);
+        }
+        while(on_leaderboard){
+            mainmenu_event(y_pointer_ptr);
+            draw_image_final(sdlRenderer, 0, 0, "../images/menu/menu.jpg", 800, 800);
+            draw_image_final(sdlRenderer, 10, 10, "../images/menu/players.png", 283, 69);
+            draw_image_final(sdlRenderer, 313, 10, "../images/menu/points.png", 283, 69);
+            draw_image_final(sdlRenderer, 616, 10, "../images/menu/rank2.png", 126, 69);
+            int y_text = 90;
+            for(int i = 0; i < players_counter; i++){
+                int x_text = 10 + 283/2 - strlen(players[i].user_name) * 10;
+                create_text(sdlRenderer,players[i].user_name,x_text,y_text,color2);
+                y_text += 50;
+                if(y_text >= 750)
+                    break;
+            }
+            y_text = 90;
+            for(int i = 0; i < players_counter; i++){
+                char text[5];
+                for(int j = 0; j < 5; j++)
+                    text[j] = '\0';
+                sprintf(text,"%d",players[i].point);
+                int x_text = 313 + 283/2 - strlen(text) * 10;
+                create_text(sdlRenderer,text,x_text,y_text,color2);
+                y_text += 50;
+                if(y_text >= 750)
+                    break;
+            }
+            y_text = 90;
+            for(int i = 0; i < players_counter; i++){
+                char text[5];
+                for(int j = 0; j < 5; j++)
+                    text[j] = '\0';
+                sprintf(text,"%d",players[i].rank);
+                int x_text = 616 + 126/2 - strlen(text) * 10;
+                create_text(sdlRenderer,text,x_text,y_text,color2);
+                y_text += 50;
+                if(y_text >= 750)
+                    break;
+            }
+            SDL_RenderPresent(sdlRenderer);
         }
     }
 }

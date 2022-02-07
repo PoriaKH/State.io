@@ -15,7 +15,8 @@
 #ifdef main
 #undef main
 #endif
-
+names players[50];
+int players_counter = 0;
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 800;
 const int FPS = 60;
@@ -338,16 +339,47 @@ int who_is_winner(map c[])
         if(winner1 != winner && ((winner1 == 1) || (winner == 1)))
             return -1;
 
-        //printf("tile[%d] = %d\n",i,c->tiles[i].team);
     }
     return winner;
 }
-int main()
+void players_sort(int players_counter)
 {
+    for(int i = 0 ; i < players_counter; i++){
+        for(int j = i + 1; j < players_counter; j++){
+            if(players[j].point > players[i].point){
+
+                int temp = players[j].point;
+                players[j].point = players[i].point;
+                players[i].point = temp;
+                char temp_text[35];
+                for(int k = 0; k < 35; k++)
+                    temp_text[k] = '\0';
+
+                strcpy(temp_text,players[j].user_name);
+                for(int k = 0; k < 35; k++)
+                    players[j].user_name[k] = '\0';
+
+                strcpy(players[j].user_name,players[i].user_name);
+                strcpy(players[i].user_name,temp_text);
+            }
+        }
+    }
+
+    for(int i = 0; i < players_counter; i++){
+        players[i].rank = i + 1;
+    }
+    for(int i = 0; i < players_counter; i++){
+        for(int j = i + 1; j < players_counter; j++){
+            if(players[i].point == players[j].point)
+                players[j].rank = players[i].rank;
+        }
+    }
+}
+int main() {
     // <----> Height
     int flags = IMG_INIT_PNG;
     int initStatus = IMG_Init(flags);
-    if((initStatus & flags) != flags){
+    if ((initStatus & flags) != flags) {
         printf("SDL_image format not available\n");
     }
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
@@ -356,63 +388,60 @@ int main()
     }
     TTF_Init();
 
-    if(NUM_OF_PLAYERS == 2){
+    if (NUM_OF_PLAYERS == 2) {
         NUM_OF_TILES_FOR_EACH_MAP = 8;
     }
-    if(NUM_OF_PLAYERS == 3){
+    if (NUM_OF_PLAYERS == 3) {
         NUM_OF_TILES_FOR_EACH_MAP = 8;
     }
-    if(NUM_OF_PLAYERS == 4){
+    if (NUM_OF_PLAYERS == 4) {
         NUM_OF_TILES_FOR_EACH_MAP = 9;
     }
 
 //create map
     map mps[NUM_OF_MAPS];
-    for(int k = 0;k < NUM_OF_MAPS ; k++)
-    {
+    for (int k = 0; k < NUM_OF_MAPS; k++) {
         srand(time(NULL));
         int x_lines; //ofoghi
         int y_lines; //amoodi
 
-        if(k == 0){
+        if (k == 0) {
             x_lines = 5;
             y_lines = 3;
         }
-        if(k == 1){
+        if (k == 1) {
             x_lines = 10;
             y_lines = 5;
         }
-        if(k == 2){
+        if (k == 2) {
             x_lines = 11;
             y_lines = 7;
         }
 
-        int x[y_lines+1];
-        int y[x_lines+1];
+        int x[y_lines + 1];
+        int y[x_lines + 1];
         tile tls[(x_lines + 1) * (y_lines + 1)];
 
         for (int i = 0; i <= y_lines; i++) {
             x[i] = rand() % SCREEN_HEIGHT;
-            while(x[i] < MIN_X)
-            {
+            while (x[i] < MIN_X) {
                 x[i] += rand() % SCREEN_HEIGHT;
 
-                if(x[i] > SCREEN_HEIGHT)
+                if (x[i] > SCREEN_HEIGHT)
                     x[i] %= SCREEN_HEIGHT;
             }
         }
         for (int i = 0; i <= x_lines; i++) {
             y[i] = rand() % SCREEN_WIDTH;
-            while(y[i] < MIN_Y)
-            {
+            while (y[i] < MIN_Y) {
                 y[i] += rand() % SCREEN_WIDTH;
 
-                if(y[i] > SCREEN_WIDTH)
+                if (y[i] > SCREEN_WIDTH)
                     y[i] %= SCREEN_WIDTH;
             }
         }
-        sort(x, y_lines+1);
-        sort(y, x_lines+1);
+        sort(x, y_lines + 1);
+        sort(y, x_lines + 1);
 
         int map_tiles_counter = 0;
 
@@ -420,17 +449,15 @@ int main()
         tls[0].y1 = 0;
         tls[0].x2 = x[0];
         tls[0].y2 = y[0];
-        tls[0].x_o = avg(tls[0].x2,tls[0].x1);
-        tls[0].y_o = avg(tls[0].y2,tls[0].y1);
+        tls[0].x_o = avg(tls[0].x2, tls[0].x1);
+        tls[0].y_o = avg(tls[0].y2, tls[0].y1);
         tls[0].height = tls[0].x2 - tls[0].x1;
         tls[0].width = tls[0].y2 - tls[0].y1;
 
-        if(tls[0].height >=70 && tls[0].width >= 70)
-        {
+        if (tls[0].height >= 70 && tls[0].width >= 70) {
             mps[k].tiles[0] = tls[0];
             map_tiles_counter++;
         }
-
 
 
         int counter = 1;
@@ -449,41 +476,31 @@ int main()
                 tls[counter].height = new.height;
                 tls[counter].x1 = x[j];
                 tls[counter].y1 = y[i];
-                if(j != y_lines)
-                {
+                if (j != y_lines) {
                     tls[counter].x2 = x[j + 1];
-                    if(i != x_lines)
-                    {
+                    if (i != x_lines) {
                         tls[counter].y2 = y[i + 1];
-                    }
-                    else
-                    {
+                    } else {
                         tls[counter].y2 = SCREEN_WIDTH;
                     }
-                }
-                else
-                {
+                } else {
                     tls[counter].x2 = SCREEN_HEIGHT;
-                    if(i != x_lines)
-                    {
-                        tls[counter].y2 = y[i+1];
-                    }
-                    else
-                    {
+                    if (i != x_lines) {
+                        tls[counter].y2 = y[i + 1];
+                    } else {
                         tls[counter].y2 = SCREEN_WIDTH;
                     }
                 }
 
 ////fixing the values
-                tile* c = &tls[counter];
+                tile *c = &tls[counter];
                 fix(c);
-                if(tls[counter].height >= min_height_of_tile && tls[counter].width >= min_width_of_tile)
-                {
-                    tile* c = &tls[counter];
+                if (tls[counter].height >= min_height_of_tile && tls[counter].width >= min_width_of_tile) {
+                    tile *c = &tls[counter];
                     second_check(c);
-                    tls[counter].x_o = avg(tls[counter].x1,tls[counter].x2);
-                    tls[counter].y_o = avg(tls[counter].y1,tls[counter].y2);
-                    mps[k].tiles[map_tiles_counter]= tls[counter];
+                    tls[counter].x_o = avg(tls[counter].x1, tls[counter].x2);
+                    tls[counter].y_o = avg(tls[counter].y1, tls[counter].y2);
+                    mps[k].tiles[map_tiles_counter] = tls[counter];
                     map_tiles_counter++;
                 }
                 counter++;
@@ -492,10 +509,9 @@ int main()
             base_width = y[i];
 
         }
-        if(map_tiles_counter < NUM_OF_TILES_FOR_EACH_MAP)
-        {
-            map* c = &mps[k];
-            clean(c,map_tiles_counter);
+        if (map_tiles_counter < NUM_OF_TILES_FOR_EACH_MAP) {
+            map *c = &mps[k];
+            clean(c, map_tiles_counter);
             k--;
             map_tiles_counter = 0;
             continue;
@@ -510,26 +526,92 @@ int main()
     SDL_Renderer *sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
 
     choose_players(sdlRenderer);
-    if(on__exit == 1)
+    if (on__exit == 1)
         return 0;
 
-    map* c0 = &mps[0];
-    map* c1 = &mps[1];
-    map* c2 = &mps[2];
+    map *c0 = &mps[0];
+    map *c1 = &mps[1];
+    map *c2 = &mps[2];
     initialize_teams(c0);
     initialize_teams(c1);
     initialize_teams(c2);
 
+    for (int i = 0; i < 50; i++) {
+        for (int j = 0; j < 35; j++) {
+            players[i].user_name[j] = '\0';
+        }
+    }
+
+    FILE *fptr = fopen("names.txt", "r");
+
+    char c = fgetc(fptr);
+    while (c != EOF) {
+        int user_name_counter = 0;
+        while (c != '\n') {
+            players[players_counter].user_name[user_name_counter] = c;
+            c = fgetc(fptr);
+            user_name_counter++;
+        }
+        int n_of_len = strlen((players[players_counter].user_name));
+        players[players_counter].user_name[n_of_len] = '.';
+        players[players_counter].user_name[n_of_len + 1] = 't';
+        players[players_counter].user_name[n_of_len + 2] = 'x';
+        players[players_counter].user_name[n_of_len + 3] = 't';
+        FILE *fptr2 = fopen(players[players_counter].user_name, "r");
+        char c2 = fgetc(fptr2);
+        char text[10];
+        for (int i = 0; i < 10; i++)
+            text[i] = '\0';
+
+        int text_counter = 0;
+        printf("\n");
+        printf("name=%s\n", players[players_counter].user_name);
+        while (c2 != EOF) {
+            text[text_counter] = c2;
+            text_counter++;
+            c2 = fgetc(fptr2);
+        }
+        printf("text=%s\n", text);
+        int n = atoi(text);
+        players[players_counter].point = n;
+
+        players_counter++;
+        c = fgetc(fptr);
+    }
+
+
+    printf("players_counter=%d\n", players_counter);
+
+    for (int i = 0; i < players_counter; i++) {
+        printf("%s          %d\n", players[i].user_name, players[i].point);
+    }
+
+
+    players_sort(players_counter);
+    for(int i = 0; i < players_counter; i++){
+        int n = strlen(players[i].user_name);
+        players[i].user_name[n - 1] = '\0';
+        players[i].user_name[n - 2] = '\0';
+        players[i].user_name[n - 3] = '\0';
+        players[i].user_name[n - 4] = '\0';
+    }
+    printf("after:\n");
+    for (int i = 0; i < players_counter; i++) {
+        printf("%s          %d\n", players[i].user_name, players[i].point);
+    }
+
 //show menu
-    mainmenu(sdlRenderer,mps);
+    mainmenu(sdlRenderer, mps);
 //
     int name_size = strlen(name);
+    char name_without_txt[35];
+    strcpy(name_without_txt, name);
+    name_without_txt[strlen(name_without_txt)] = '\0';
     name[name_size] = '.';
     name[name_size + 1] = 't';
     name[name_size + 2] = 'x';
     name[name_size + 3] = 't';
     name[name_size + 4] = '\0';
-    printf("%s",name);
 
     float soldiers_speed_team1_copy = soldiers_speed_team1;
     float soldiers_speed_team2_copy = soldiers_speed_team2;
@@ -560,7 +642,7 @@ int main()
     int on_potion = 0;
     int using_potion = 0;
     int who_is_using_potion = -1;
-    int* who_is_using_potion_pointer = &who_is_using_potion;
+    int *who_is_using_potion_pointer = &who_is_using_potion;
     int k = 1;
     time_t power_begin = time(NULL);
     time_t power_end_copy = 0;
@@ -570,11 +652,11 @@ int main()
     while (shallExit == SDL_FALSE) {
 
         winner = who_is_winner(mps);
-        if(winner != -1)
+        if (winner != -1)
             break;
 
         int power_flag = 0;
-        if(on__exit)
+        if (on__exit)
             break;
 
         time_t time_end = time(NULL);
@@ -584,57 +666,66 @@ int main()
         SDL_RenderClear(sdlRenderer);
 
 
-
         for (int i = 1; i < NUM_OF_TILES_FOR_EACH_MAP; i++) {
-            boxColor(sdlRenderer, mps[the_chosen_map].tiles[i].x1, mps[the_chosen_map].tiles[i].y1, mps[the_chosen_map].tiles[i].x2, mps[the_chosen_map].tiles[i].y2,
+            boxColor(sdlRenderer, mps[the_chosen_map].tiles[i].x1, mps[the_chosen_map].tiles[i].y1,
+                     mps[the_chosen_map].tiles[i].x2, mps[the_chosen_map].tiles[i].y2,
                      mps[the_chosen_map].tiles[i].b_color);
 
-            filledCircleColor(sdlRenderer, mps[the_chosen_map].tiles[i].x_o, mps[the_chosen_map].tiles[i].y_o, cubes_r, mps[the_chosen_map].tiles[i].c_color);
+            filledCircleColor(sdlRenderer, mps[the_chosen_map].tiles[i].x_o, mps[the_chosen_map].tiles[i].y_o, cubes_r,
+                              mps[the_chosen_map].tiles[i].c_color);
             char text[10];
             sprintf(text, "%d", mps[the_chosen_map].tiles[i].soldiers);
 
             if (arrived_flag == 0) {
-                if (counter(mps[the_chosen_map].tiles[i].soldiers) == 0 || counter(mps[the_chosen_map].tiles[i].soldiers) == 1)
-                    stringColor(sdlRenderer, mps[the_chosen_map].tiles[i].x_o - 3, mps[the_chosen_map].tiles[i].y_o - 3, text, 0xff000000);
+                if (counter(mps[the_chosen_map].tiles[i].soldiers) == 0 ||
+                    counter(mps[the_chosen_map].tiles[i].soldiers) == 1)
+                    stringColor(sdlRenderer, mps[the_chosen_map].tiles[i].x_o - 3, mps[the_chosen_map].tiles[i].y_o - 3,
+                                text, 0xff000000);
 
                 if (counter(mps[the_chosen_map].tiles[i].soldiers) == 2)
-                    stringColor(sdlRenderer, mps[the_chosen_map].tiles[i].x_o - 8, mps[the_chosen_map].tiles[i].y_o - 3, text, 0xff000000);
+                    stringColor(sdlRenderer, mps[the_chosen_map].tiles[i].x_o - 8, mps[the_chosen_map].tiles[i].y_o - 3,
+                                text, 0xff000000);
 
                 if (counter(mps[the_chosen_map].tiles[i].soldiers) == 3)
-                    stringColor(sdlRenderer, mps[the_chosen_map].tiles[i].x_o - 11, mps[the_chosen_map].tiles[i].y_o - 3, text, 0xff000000);
+                    stringColor(sdlRenderer, mps[the_chosen_map].tiles[i].x_o - 11,
+                                mps[the_chosen_map].tiles[i].y_o - 3, text, 0xff000000);
             } else if (i != end_backup) {
-                if (counter(mps[the_chosen_map].tiles[i].soldiers) == 0 || counter(mps[the_chosen_map].tiles[i].soldiers) == 1)
-                    stringColor(sdlRenderer, mps[the_chosen_map].tiles[i].x_o - 3, mps[the_chosen_map].tiles[i].y_o - 3, text, 0xff000000);
+                if (counter(mps[the_chosen_map].tiles[i].soldiers) == 0 ||
+                    counter(mps[the_chosen_map].tiles[i].soldiers) == 1)
+                    stringColor(sdlRenderer, mps[the_chosen_map].tiles[i].x_o - 3, mps[the_chosen_map].tiles[i].y_o - 3,
+                                text, 0xff000000);
 
                 if (counter(mps[the_chosen_map].tiles[i].soldiers) == 2)
-                    stringColor(sdlRenderer, mps[the_chosen_map].tiles[i].x_o - 8, mps[the_chosen_map].tiles[i].y_o - 3, text, 0xff000000);
+                    stringColor(sdlRenderer, mps[the_chosen_map].tiles[i].x_o - 8, mps[the_chosen_map].tiles[i].y_o - 3,
+                                text, 0xff000000);
 
                 if (counter(mps[the_chosen_map].tiles[i].soldiers) == 3)
-                    stringColor(sdlRenderer, mps[the_chosen_map].tiles[i].x_o - 11, mps[the_chosen_map].tiles[i].y_o - 3, text, 0xff000000);
+                    stringColor(sdlRenderer, mps[the_chosen_map].tiles[i].x_o - 11,
+                                mps[the_chosen_map].tiles[i].y_o - 3, text, 0xff000000);
             }
 
             if (time_end - time_begin >= 1) {
                 if (mps[the_chosen_map].tiles[i].team != 0) {
                     if (mps[the_chosen_map].tiles[i].soldiers < MAX_NUM_OF_SOLDIERS_TO_REACH) {
-                        if(using_potion)
-                            if(power_num == 4)
-                                if(mps[the_chosen_map].tiles[i].team == who_is_using_potion)
+                        if (using_potion)
+                            if (power_num == 4)
+                                if (mps[the_chosen_map].tiles[i].team == who_is_using_potion)
                                     k = 3;
                                 else
                                     k = 1;
 
                         mps[the_chosen_map].tiles[i].soldiers += (time_end - time_begin) * k;
-                        if(mps[the_chosen_map].tiles[i].soldiers > MAX_NUM_OF_SOLDIERS_TO_REACH)
+                        if (mps[the_chosen_map].tiles[i].soldiers > MAX_NUM_OF_SOLDIERS_TO_REACH)
                             mps[the_chosen_map].tiles[i].soldiers = MAX_NUM_OF_SOLDIERS_TO_REACH;
                         time_flag = 1;
                     }
                 } else {
-                    if(mps[the_chosen_map].tiles[i].soldiers >= MAX_NUM_OF_SOLDIERS_TO_REACH_TEAM0){
+                    if (mps[the_chosen_map].tiles[i].soldiers >= MAX_NUM_OF_SOLDIERS_TO_REACH_TEAM0) {
                         time_flag = 1;
                     }
                     if (mps[the_chosen_map].tiles[i].soldiers < MAX_NUM_OF_SOLDIERS_TO_REACH_TEAM0) {
                         mps[the_chosen_map].tiles[i].soldiers += time_end - time_begin;
-                        if(mps[the_chosen_map].tiles[i].soldiers > MAX_NUM_OF_SOLDIERS_TO_REACH_TEAM0)
+                        if (mps[the_chosen_map].tiles[i].soldiers > MAX_NUM_OF_SOLDIERS_TO_REACH_TEAM0)
                             mps[the_chosen_map].tiles[i].soldiers = MAX_NUM_OF_SOLDIERS_TO_REACH_TEAM0;
                         time_flag = 1;
                     }
@@ -642,15 +733,15 @@ int main()
             }
         }
 //draw image
-        if(using_potion){
+        if (using_potion) {
             Uint32 COLOR;
-            for(int x = 1; x < NUM_OF_TILES_FOR_EACH_MAP; x++)
-                if(mps[the_chosen_map].tiles[x].team == who_is_using_potion)
+            for (int x = 1; x < NUM_OF_TILES_FOR_EACH_MAP; x++)
+                if (mps[the_chosen_map].tiles[x].team == who_is_using_potion)
                     COLOR = mps[the_chosen_map].tiles[x].c_color;
 
-            filledCircleColor(sdlRenderer,20,20,19,COLOR);
-            draw_image_2(sdlRenderer,power_num);
-            if(power_end - power_start >= 10){
+            filledCircleColor(sdlRenderer, 20, 20, 19, COLOR);
+            draw_image_2(sdlRenderer, power_num);
+            if (power_end - power_start >= 10) {
                 soldiers_speed_team1 = soldiers_speed_team1_copy;
                 soldiers_speed_team2 = soldiers_speed_team2_copy;
                 soldiers_speed_team3 = soldiers_speed_team3_copy;
@@ -661,20 +752,20 @@ int main()
                 k = 1;
             }
         }
-        if(power_end - power_begin >= 25){
+        if (power_end - power_begin >= 25) {
             power_begin = power_end;
             power_end_copy = power_end;
-            tile0 = rand() % (NUM_OF_TILES_FOR_EACH_MAP-1) + 1;
-            tile1 = rand() % (NUM_OF_TILES_FOR_EACH_MAP-1) + 1;
-            while(tile1 == tile0)
-                tile1 = rand() % (NUM_OF_TILES_FOR_EACH_MAP-1) + 1;
+            tile0 = rand() % (NUM_OF_TILES_FOR_EACH_MAP - 1) + 1;
+            tile1 = rand() % (NUM_OF_TILES_FOR_EACH_MAP - 1) + 1;
+            while (tile1 == tile0)
+                tile1 = rand() % (NUM_OF_TILES_FOR_EACH_MAP - 1) + 1;
 
             power_num = rand() % 4 + 1;
             on_potion = 1;
         }
-        if(power_end - power_end_copy <= 15 && on_potion == 1){
-            draw_image(sdlRenderer,mps[the_chosen_map].tiles[tile0],mps[the_chosen_map].tiles[tile1],power_num);
-            if(power_end - power_end_copy >= 15){
+        if (power_end - power_end_copy <= 15 && on_potion == 1) {
+            draw_image(sdlRenderer, mps[the_chosen_map].tiles[tile0], mps[the_chosen_map].tiles[tile1], power_num);
+            if (power_end - power_end_copy >= 15) {
                 power_end_copy = 0;
                 power_begin = power_end;
                 on_potion = 0;
@@ -727,7 +818,8 @@ int main()
                                 if (mps[the_chosen_map].tiles[i].team == 2) {
                                     for (int j = 1; j < NUM_OF_TILES_FOR_EACH_MAP; j++) {
                                         if (mps[the_chosen_map].tiles[j].team == 0) {
-                                            if (mps[the_chosen_map].tiles[j].soldiers < mps[the_chosen_map].tiles[i].soldiers) {
+                                            if (mps[the_chosen_map].tiles[j].soldiers <
+                                                mps[the_chosen_map].tiles[i].soldiers) {
                                                 s = i;
                                                 e = j;
                                                 tr = 0;
@@ -741,73 +833,78 @@ int main()
                     }
                 }
                 if (s != -1 && e != -1) {
-                    //printf("bot\n");
+
                     final_flag = 1;
                     int *final__flag = &final_flag;
                     map *c = &mps[the_chosen_map];
-                    int* on_potion_pointer = &on_potion;
-                    int* using_potion_pointer = &using_potion;
-                    time_t* power_start_pointer = &power_start;
-                    float* soldiers_speed_team1_pointer = &soldiers_speed_team1;
-                    float* soldiers_speed_team2_pointer = &soldiers_speed_team2;
-                    float* soldiers_speed_team3_pointer = &soldiers_speed_team3;
-                    float* soldiers_speed_team4_pointer = &soldiers_speed_team4;
+                    int *on_potion_pointer = &on_potion;
+                    int *using_potion_pointer = &using_potion;
+                    time_t *power_start_pointer = &power_start;
+                    float *soldiers_speed_team1_pointer = &soldiers_speed_team1;
+                    float *soldiers_speed_team2_pointer = &soldiers_speed_team2;
+                    float *soldiers_speed_team3_pointer = &soldiers_speed_team3;
+                    float *soldiers_speed_team4_pointer = &soldiers_speed_team4;
 
-                    send_soldiers(c, s, e, sdlRenderer, x_soldiers, y_soldiers, final__flag,on_potion,tile0,tile1,on_potion_pointer,using_potion_pointer,power_start_pointer,soldiers_speed_team1_pointer,soldiers_speed_team2_pointer,soldiers_speed_team3_pointer,soldiers_speed_team4_pointer,power_num,who_is_using_potion_pointer);
+                    send_soldiers(c, s, e, sdlRenderer, x_soldiers, y_soldiers, final__flag, on_potion, tile0, tile1,
+                                  on_potion_pointer, using_potion_pointer, power_start_pointer,
+                                  soldiers_speed_team1_pointer, soldiers_speed_team2_pointer,
+                                  soldiers_speed_team3_pointer, soldiers_speed_team4_pointer, power_num,
+                                  who_is_using_potion_pointer);
 
 
-                    if(on_potion)
-                        if(potion_check(x_soldiers,y_soldiers,mps[the_chosen_map].tiles[tile0],mps[the_chosen_map].tiles[tile1])){
-                            if(power_num == 4){
-                                if(mps[the_chosen_map].tiles[s].team == 2) {
+                    if (on_potion)
+                        if (potion_check(x_soldiers, y_soldiers, mps[the_chosen_map].tiles[tile0],
+                                         mps[the_chosen_map].tiles[tile1])) {
+                            if (power_num == 4) {
+                                if (mps[the_chosen_map].tiles[s].team == 2) {
                                     who_is_using_potion = 2;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 3) {
+                                if (mps[the_chosen_map].tiles[s].team == 3) {
                                     who_is_using_potion = 3;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 4) {
+                                if (mps[the_chosen_map].tiles[s].team == 4) {
                                     who_is_using_potion = 4;
                                 }
                             }
-                            if(power_num == 2){
-                                if(mps[the_chosen_map].tiles[s].team == 2) {
+                            if (power_num == 2) {
+                                if (mps[the_chosen_map].tiles[s].team == 2) {
                                     who_is_using_potion = 2;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 3) {
+                                if (mps[the_chosen_map].tiles[s].team == 3) {
                                     who_is_using_potion = 3;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 4) {
+                                if (mps[the_chosen_map].tiles[s].team == 4) {
                                     who_is_using_potion = 4;
                                 }
                             }
-                            if(power_num == 3){
-                                if(mps[the_chosen_map].tiles[s].team == 2) {
+                            if (power_num == 3) {
+                                if (mps[the_chosen_map].tiles[s].team == 2) {
                                     soldiers_speed_team2 *= 2.5;
                                     who_is_using_potion = 2;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 3) {
+                                if (mps[the_chosen_map].tiles[s].team == 3) {
                                     soldiers_speed_team3 *= 2.5;
                                     who_is_using_potion = 3;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 4) {
+                                if (mps[the_chosen_map].tiles[s].team == 4) {
                                     soldiers_speed_team4 *= 2.5;
                                     who_is_using_potion = 4;
                                 }
                             }
-                            if(power_num == 1){
-                                if(mps[the_chosen_map].tiles[s].team == 2){
+                            if (power_num == 1) {
+                                if (mps[the_chosen_map].tiles[s].team == 2) {
                                     soldiers_speed_team1 *= 0.3;
                                     soldiers_speed_team3 *= 0.3;
                                     soldiers_speed_team4 *= 0.3;
                                     who_is_using_potion = 2;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 3){
+                                if (mps[the_chosen_map].tiles[s].team == 3) {
                                     soldiers_speed_team1 *= 0.3;
                                     soldiers_speed_team2 *= 0.3;
                                     soldiers_speed_team4 *= 0.3;
                                     who_is_using_potion = 3;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 4){
+                                if (mps[the_chosen_map].tiles[s].team == 4) {
                                     soldiers_speed_team1 *= 0.3;
                                     soldiers_speed_team2 *= 0.3;
                                     soldiers_speed_team3 *= 0.3;
@@ -855,7 +952,8 @@ int main()
                                 if (mps[the_chosen_map].tiles[i].team == 2 || mps[the_chosen_map].tiles[i].team == 3) {
                                     for (int j = 1; j < NUM_OF_TILES_FOR_EACH_MAP; j++) {
                                         if (mps[the_chosen_map].tiles[j].team == 0) {
-                                            if (mps[the_chosen_map].tiles[j].soldiers < mps[the_chosen_map].tiles[i].soldiers) {
+                                            if (mps[the_chosen_map].tiles[j].soldiers <
+                                                mps[the_chosen_map].tiles[i].soldiers) {
                                                 s = i;
                                                 e = j;
                                                 tr = 0;
@@ -869,72 +967,77 @@ int main()
                     }
                 }
                 if (s != -1 && e != -1) {
-                    //printf("bot\n");
+
                     final_flag = 1;
                     int *final__flag = &final_flag;
                     map *c = &mps[the_chosen_map];
-                    int* on_potion_pointer = &on_potion;
-                    int* using_potion_pointer = &using_potion;
-                    time_t* power_start_pointer = &power_start;
-                    float* soldiers_speed_team1_pointer = &soldiers_speed_team1;
-                    float* soldiers_speed_team2_pointer = &soldiers_speed_team2;
-                    float* soldiers_speed_team3_pointer = &soldiers_speed_team3;
-                    float* soldiers_speed_team4_pointer = &soldiers_speed_team4;
+                    int *on_potion_pointer = &on_potion;
+                    int *using_potion_pointer = &using_potion;
+                    time_t *power_start_pointer = &power_start;
+                    float *soldiers_speed_team1_pointer = &soldiers_speed_team1;
+                    float *soldiers_speed_team2_pointer = &soldiers_speed_team2;
+                    float *soldiers_speed_team3_pointer = &soldiers_speed_team3;
+                    float *soldiers_speed_team4_pointer = &soldiers_speed_team4;
 
-                    send_soldiers(c, s, e, sdlRenderer, x_soldiers, y_soldiers, final__flag,on_potion,tile0,tile1,on_potion_pointer,using_potion_pointer,power_start_pointer,soldiers_speed_team1_pointer,soldiers_speed_team2_pointer,soldiers_speed_team3_pointer,soldiers_speed_team4_pointer,power_num,who_is_using_potion_pointer);
+                    send_soldiers(c, s, e, sdlRenderer, x_soldiers, y_soldiers, final__flag, on_potion, tile0, tile1,
+                                  on_potion_pointer, using_potion_pointer, power_start_pointer,
+                                  soldiers_speed_team1_pointer, soldiers_speed_team2_pointer,
+                                  soldiers_speed_team3_pointer, soldiers_speed_team4_pointer, power_num,
+                                  who_is_using_potion_pointer);
 
-                    if(on_potion)
-                        if(potion_check(x_soldiers,y_soldiers,mps[the_chosen_map].tiles[tile0],mps[the_chosen_map].tiles[tile1])){
-                            if(power_num == 4) {
-                                if(mps[the_chosen_map].tiles[s].team == 2) {
+                    if (on_potion)
+                        if (potion_check(x_soldiers, y_soldiers, mps[the_chosen_map].tiles[tile0],
+                                         mps[the_chosen_map].tiles[tile1])) {
+                            if (power_num == 4) {
+                                if (mps[the_chosen_map].tiles[s].team == 2) {
                                     who_is_using_potion = 2;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 3) {
+                                if (mps[the_chosen_map].tiles[s].team == 3) {
                                     who_is_using_potion = 3;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 4) {
+                                if (mps[the_chosen_map].tiles[s].team == 4) {
                                     who_is_using_potion = 4;
                                 }
                             }
-                            if(power_num == 2){
-                                if(mps[the_chosen_map].tiles[s].team == 2) {
+                            if (power_num == 2) {
+                                if (mps[the_chosen_map].tiles[s].team == 2) {
                                     who_is_using_potion = 2;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 3) {
+                                if (mps[the_chosen_map].tiles[s].team == 3) {
                                     who_is_using_potion = 3;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 4) {
+                                if (mps[the_chosen_map].tiles[s].team == 4) {
                                     who_is_using_potion = 4;
                                 }
                             }
-                            if(power_num == 3){
-                                if(mps[the_chosen_map].tiles[s].team == 2) {
+                            if (power_num == 3) {
+                                if (mps[the_chosen_map].tiles[s].team == 2) {
                                     soldiers_speed_team2 *= 2.5;
                                     who_is_using_potion = 2;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 3) {
+                                if (mps[the_chosen_map].tiles[s].team == 3) {
                                     soldiers_speed_team3 *= 2.5;
                                     who_is_using_potion = 3;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 4) {
+                                if (mps[the_chosen_map].tiles[s].team == 4) {
                                     soldiers_speed_team4 *= 2.5;
                                     who_is_using_potion = 4;
                                 }
                             }
-                            if(power_num == 1){
-                                if(mps[the_chosen_map].tiles[s].team == 2){
+                            if (power_num == 1) {
+                                if (mps[the_chosen_map].tiles[s].team == 2) {
                                     soldiers_speed_team1 *= 0.3;
                                     soldiers_speed_team3 *= 0.3;
                                     soldiers_speed_team4 *= 0.3;
                                     who_is_using_potion = 2;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 3){
+                                if (mps[the_chosen_map].tiles[s].team == 3) {
                                     soldiers_speed_team1 *= 0.3;
                                     soldiers_speed_team2 *= 0.3;
                                     soldiers_speed_team4 *= 0.3;
                                     who_is_using_potion = 3;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 4){
+                                if (mps[the_chosen_map].tiles[s].team == 4) {
                                     soldiers_speed_team1 *= 0.3;
                                     soldiers_speed_team2 *= 0.3;
                                     soldiers_speed_team3 *= 0.3;
@@ -961,7 +1064,8 @@ int main()
                         if (tr == 0)
                             break;
 
-                        if (mps[the_chosen_map].tiles[i].team == 2 || mps[the_chosen_map].tiles[i].team == 3 || mps[the_chosen_map].tiles[i].team == 4) {
+                        if (mps[the_chosen_map].tiles[i].team == 2 || mps[the_chosen_map].tiles[i].team == 3 ||
+                            mps[the_chosen_map].tiles[i].team == 4) {
                             for (int j = 1; j < NUM_OF_TILES_FOR_EACH_MAP; j++) {
                                 if (mps[the_chosen_map].tiles[j].team == 1) {
                                     if (mps[the_chosen_map].tiles[j].soldiers < mps[the_chosen_map].tiles[i].soldiers) {
@@ -979,10 +1083,12 @@ int main()
                                 if (tr == 0)
                                     break;
 
-                                if (mps[the_chosen_map].tiles[i].team == 2 || mps[the_chosen_map].tiles[i].team == 3 || mps[the_chosen_map].tiles[i].team == 4) {
+                                if (mps[the_chosen_map].tiles[i].team == 2 || mps[the_chosen_map].tiles[i].team == 3 ||
+                                    mps[the_chosen_map].tiles[i].team == 4) {
                                     for (int j = 1; j < NUM_OF_TILES_FOR_EACH_MAP; j++) {
                                         if (mps[the_chosen_map].tiles[j].team == 0) {
-                                            if (mps[the_chosen_map].tiles[j].soldiers < mps[the_chosen_map].tiles[i].soldiers) {
+                                            if (mps[the_chosen_map].tiles[j].soldiers <
+                                                mps[the_chosen_map].tiles[i].soldiers) {
                                                 s = i;
                                                 e = j;
                                                 tr = 0;
@@ -996,71 +1102,76 @@ int main()
                     }
                 }
                 if (s != -1 && e != -1) {
-                    //printf("bot\n");
+
                     final_flag = 1;
                     int *final__flag = &final_flag;
                     map *c = &mps[the_chosen_map];
-                    int* on_potion_pointer = &on_potion;
-                    int* using_potion_pointer = &using_potion;
-                    time_t* power_start_pointer = &power_start;
-                    float* soldiers_speed_team1_pointer = &soldiers_speed_team1;
-                    float* soldiers_speed_team2_pointer = &soldiers_speed_team2;
-                    float* soldiers_speed_team3_pointer = &soldiers_speed_team3;
-                    float* soldiers_speed_team4_pointer = &soldiers_speed_team4;
+                    int *on_potion_pointer = &on_potion;
+                    int *using_potion_pointer = &using_potion;
+                    time_t *power_start_pointer = &power_start;
+                    float *soldiers_speed_team1_pointer = &soldiers_speed_team1;
+                    float *soldiers_speed_team2_pointer = &soldiers_speed_team2;
+                    float *soldiers_speed_team3_pointer = &soldiers_speed_team3;
+                    float *soldiers_speed_team4_pointer = &soldiers_speed_team4;
 
-                    send_soldiers(c, s, e, sdlRenderer, x_soldiers, y_soldiers, final__flag,on_potion,tile0,tile1,on_potion_pointer,using_potion_pointer,power_start_pointer,soldiers_speed_team1_pointer,soldiers_speed_team2_pointer,soldiers_speed_team3_pointer,soldiers_speed_team4_pointer,power_num,who_is_using_potion_pointer);
-                    if(on_potion)
-                        if(potion_check(x_soldiers,y_soldiers,mps[the_chosen_map].tiles[tile0],mps[the_chosen_map].tiles[tile1])){
-                            if(power_num == 4){
-                                if(mps[the_chosen_map].tiles[s].team == 2) {
+                    send_soldiers(c, s, e, sdlRenderer, x_soldiers, y_soldiers, final__flag, on_potion, tile0, tile1,
+                                  on_potion_pointer, using_potion_pointer, power_start_pointer,
+                                  soldiers_speed_team1_pointer, soldiers_speed_team2_pointer,
+                                  soldiers_speed_team3_pointer, soldiers_speed_team4_pointer, power_num,
+                                  who_is_using_potion_pointer);
+                    if (on_potion)
+                        if (potion_check(x_soldiers, y_soldiers, mps[the_chosen_map].tiles[tile0],
+                                         mps[the_chosen_map].tiles[tile1])) {
+                            if (power_num == 4) {
+                                if (mps[the_chosen_map].tiles[s].team == 2) {
                                     who_is_using_potion = 2;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 3) {
+                                if (mps[the_chosen_map].tiles[s].team == 3) {
                                     who_is_using_potion = 3;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 4) {
+                                if (mps[the_chosen_map].tiles[s].team == 4) {
                                     who_is_using_potion = 4;
                                 }
                             }
-                            if(power_num == 2){
-                                if(mps[the_chosen_map].tiles[s].team == 2) {
+                            if (power_num == 2) {
+                                if (mps[the_chosen_map].tiles[s].team == 2) {
                                     who_is_using_potion = 2;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 3) {
+                                if (mps[the_chosen_map].tiles[s].team == 3) {
                                     who_is_using_potion = 3;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 4) {
+                                if (mps[the_chosen_map].tiles[s].team == 4) {
                                     who_is_using_potion = 4;
                                 }
                             }
-                            if(power_num == 3){
-                                if(mps[the_chosen_map].tiles[s].team == 2) {
+                            if (power_num == 3) {
+                                if (mps[the_chosen_map].tiles[s].team == 2) {
                                     soldiers_speed_team2 *= 2.5;
                                     who_is_using_potion = 2;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 3) {
+                                if (mps[the_chosen_map].tiles[s].team == 3) {
                                     soldiers_speed_team3 *= 2.5;
                                     who_is_using_potion = 3;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 4) {
+                                if (mps[the_chosen_map].tiles[s].team == 4) {
                                     soldiers_speed_team4 *= 2.5;
                                     who_is_using_potion = 4;
                                 }
                             }
-                            if(power_num == 1){
-                                if(mps[the_chosen_map].tiles[s].team == 2){
+                            if (power_num == 1) {
+                                if (mps[the_chosen_map].tiles[s].team == 2) {
                                     soldiers_speed_team1 *= 0.3;
                                     soldiers_speed_team3 *= 0.3;
                                     soldiers_speed_team4 *= 0.3;
                                     who_is_using_potion = 2;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 3){
+                                if (mps[the_chosen_map].tiles[s].team == 3) {
                                     soldiers_speed_team1 *= 0.3;
                                     soldiers_speed_team2 *= 0.3;
                                     soldiers_speed_team4 *= 0.3;
                                     who_is_using_potion = 3;
                                 }
-                                if(mps[the_chosen_map].tiles[s].team == 4){
+                                if (mps[the_chosen_map].tiles[s].team == 4) {
                                     soldiers_speed_team1 *= 0.3;
                                     soldiers_speed_team2 *= 0.3;
                                     soldiers_speed_team3 *= 0.3;
@@ -1081,7 +1192,7 @@ int main()
             }
         }
 //--------------------------//
-        if(s == -1 && e == -1 && final_flag == 0 && final_flag_important == 0) {
+        if (s == -1 && e == -1 && final_flag == 0 && final_flag_important == 0) {
             SDL_Event event;
             if (click(event) == 1) {
                 start = is_valid_start(mps[the_chosen_map]);
@@ -1089,9 +1200,6 @@ int main()
                 end_backup = end;
 
                 if (start != -1 && end != -1 && start != end) {
-//                printf("its valid\n");
-//                printf("x0 =%d  y0 =%d\n",x0_click,y0_click);
-//                printf("x1 =%d  y1 =%d\n",x1_click,y1_click);
 
                     final_flag = 1;
                     final_flag_important = 1;
@@ -1100,87 +1208,90 @@ int main()
         }
 // sending soldiers from start to end tile//
         if (final_flag == 1 && final_flag_important == 1 && s == -1 && e == -1) {
-            //printf("tooye click\n");
             int *final__flag = &final_flag;
             map *c = &mps[the_chosen_map];
-            int* on_potion_pointer = &on_potion;
-            int* using_potion_pointer = &using_potion;
-            time_t* power_start_pointer = &power_start;
-            float* soldiers_speed_team1_pointer = &soldiers_speed_team1;
-            float* soldiers_speed_team2_pointer = &soldiers_speed_team2;
-            float* soldiers_speed_team3_pointer = &soldiers_speed_team3;
-            float* soldiers_speed_team4_pointer = &soldiers_speed_team4;
+            int *on_potion_pointer = &on_potion;
+            int *using_potion_pointer = &using_potion;
+            time_t *power_start_pointer = &power_start;
+            float *soldiers_speed_team1_pointer = &soldiers_speed_team1;
+            float *soldiers_speed_team2_pointer = &soldiers_speed_team2;
+            float *soldiers_speed_team3_pointer = &soldiers_speed_team3;
+            float *soldiers_speed_team4_pointer = &soldiers_speed_team4;
 
-            send_soldiers(c, start, end, sdlRenderer, x_soldiers, y_soldiers, final__flag,on_potion,tile0,tile1,on_potion_pointer,using_potion_pointer,power_start_pointer,soldiers_speed_team1_pointer,soldiers_speed_team2_pointer,soldiers_speed_team3_pointer,soldiers_speed_team4_pointer,power_num,who_is_using_potion_pointer);
+            send_soldiers(c, start, end, sdlRenderer, x_soldiers, y_soldiers, final__flag, on_potion, tile0, tile1,
+                          on_potion_pointer, using_potion_pointer, power_start_pointer, soldiers_speed_team1_pointer,
+                          soldiers_speed_team2_pointer, soldiers_speed_team3_pointer, soldiers_speed_team4_pointer,
+                          power_num, who_is_using_potion_pointer);
 
-            if(on_potion)
-                if(potion_check(x_soldiers,y_soldiers,mps[the_chosen_map].tiles[tile0],mps[the_chosen_map].tiles[tile1])){
-                    if(power_num == 4){
-                        if(mps[the_chosen_map].tiles[start].team == 1) {
+            if (on_potion)
+                if (potion_check(x_soldiers, y_soldiers, mps[the_chosen_map].tiles[tile0],
+                                 mps[the_chosen_map].tiles[tile1])) {
+                    if (power_num == 4) {
+                        if (mps[the_chosen_map].tiles[start].team == 1) {
                             who_is_using_potion = 1;
                         }
-                        if(mps[the_chosen_map].tiles[start].team == 2) {
+                        if (mps[the_chosen_map].tiles[start].team == 2) {
                             who_is_using_potion = 2;
                         }
-                        if(mps[the_chosen_map].tiles[start].team == 3) {
+                        if (mps[the_chosen_map].tiles[start].team == 3) {
                             who_is_using_potion = 3;
                         }
-                        if(mps[the_chosen_map].tiles[start].team == 4) {
+                        if (mps[the_chosen_map].tiles[start].team == 4) {
                             who_is_using_potion = 4;
                         }
                     }
-                    if(power_num == 2){
-                        if(mps[the_chosen_map].tiles[start].team == 1) {
+                    if (power_num == 2) {
+                        if (mps[the_chosen_map].tiles[start].team == 1) {
                             who_is_using_potion = 1;
                         }
-                        if(mps[the_chosen_map].tiles[start].team == 2) {
+                        if (mps[the_chosen_map].tiles[start].team == 2) {
                             who_is_using_potion = 2;
                         }
-                        if(mps[the_chosen_map].tiles[start].team == 3) {
+                        if (mps[the_chosen_map].tiles[start].team == 3) {
                             who_is_using_potion = 3;
                         }
-                        if(mps[the_chosen_map].tiles[start].team == 4) {
+                        if (mps[the_chosen_map].tiles[start].team == 4) {
                             who_is_using_potion = 4;
                         }
                     }
-                    if(power_num == 3){
-                        if(mps[the_chosen_map].tiles[start].team == 1) {
+                    if (power_num == 3) {
+                        if (mps[the_chosen_map].tiles[start].team == 1) {
                             soldiers_speed_team1 *= 2.5;
                             who_is_using_potion = 1;
                         }
-                        if(mps[the_chosen_map].tiles[start].team == 2) {
+                        if (mps[the_chosen_map].tiles[start].team == 2) {
                             soldiers_speed_team2 *= 2.5;
                             who_is_using_potion = 2;
                         }
-                        if(mps[the_chosen_map].tiles[start].team == 3) {
+                        if (mps[the_chosen_map].tiles[start].team == 3) {
                             soldiers_speed_team3 *= 2.5;
                             who_is_using_potion = 3;
                         }
-                        if(mps[the_chosen_map].tiles[start].team == 4) {
+                        if (mps[the_chosen_map].tiles[start].team == 4) {
                             soldiers_speed_team4 *= 2.5;
                             who_is_using_potion = 4;
                         }
                     }
-                    if(power_num == 1){
-                        if(mps[the_chosen_map].tiles[start].team == 1){
+                    if (power_num == 1) {
+                        if (mps[the_chosen_map].tiles[start].team == 1) {
                             soldiers_speed_team2 *= 0.3;
                             soldiers_speed_team3 *= 0.3;
                             soldiers_speed_team4 *= 0.3;
                             who_is_using_potion = 1;
                         }
-                        if(mps[the_chosen_map].tiles[start].team == 2){
+                        if (mps[the_chosen_map].tiles[start].team == 2) {
                             soldiers_speed_team1 *= 0.3;
                             soldiers_speed_team3 *= 0.3;
                             soldiers_speed_team4 *= 0.3;
                             who_is_using_potion = 2;
                         }
-                        if(mps[the_chosen_map].tiles[start].team == 3){
+                        if (mps[the_chosen_map].tiles[start].team == 3) {
                             soldiers_speed_team1 *= 0.3;
                             soldiers_speed_team2 *= 0.3;
                             soldiers_speed_team4 *= 0.3;
                             who_is_using_potion = 3;
                         }
-                        if(mps[the_chosen_map].tiles[start].team == 4){
+                        if (mps[the_chosen_map].tiles[start].team == 4) {
                             soldiers_speed_team1 *= 0.3;
                             soldiers_speed_team2 *= 0.3;
                             soldiers_speed_team3 *= 0.3;
@@ -1192,15 +1303,10 @@ int main()
                     power_start = time(NULL);
                 }
 
-            if(final_flag == 0)
+            if (final_flag == 0)
                 final_flag_important = 0;
         }
-        //printf("final_flag=%d  imp=%d\n",final_flag,final_flag_important);
 //----------------------------------------//
-
-//        winner = who_is_winner(mps);
-//        if(winner != -1)
-//            break;
 
         SDL_Event sdlEvent;
         while (SDL_PollEvent(&sdlEvent)) {
@@ -1212,47 +1318,39 @@ int main()
         }
 
     }
-    //printf("\nwinner is = %d",winner);
 
-    if(winner == 1){
+    int NewMember_flag = 0;
+    if (winner == 1) {
 //we won
-        FILE *fptr1 = fopen(name,"r");
-        if(!fptr1){
-            FILE *fptr2 = fopen(name,"w");
-            fputc('2',fptr2);
-            fputc('0',fptr2);
-        }
-        else {
-            char buff[10];
-            char c = fgetc(fptr1);
-            int buff_counter = 0;
-            while (c != EOF){
-                buff[buff_counter] = c;
-                buff[buff_counter + 1] = '\0';
-                c = fgetc(fptr1);
-                buff_counter++;
+        FILE *fptr1 = fopen(name, "r");
+        if (!fptr1) {
+            NewMember_flag = 1;
+            FILE *fptr_copy = fopen("names.txt", "r");
+            FILE *fptr_temp = fopen("temp.txt", "w");
+            char c = fgetc(fptr_copy);
+            while (c != EOF) {
+                fputc(c, fptr_temp);
+                c = fgetc(fptr_copy);
             }
-            fptr1 = fopen(name,"w");
-            int n = atoi(buff);
-            n += 20;
-            char text[10];
-            sprintf(text, "%d", n);
-            text[strlen(text)] = '\0';
-            int i = 0;
-            while(text[i] != '\0'){
-                fputc((int)text[i],fptr1);
-                i++;
+            fclose(fptr_copy);
+            FILE *fptr_copy2 = fopen("names.txt", "w");
+            fclose(fptr_temp);
+            FILE *fptr_temp2 = fopen("temp.txt", "r");
+            c = fgetc(fptr_temp2);
+            while (c != EOF) {
+                fputc(c, fptr_copy2);
+                c = fgetc(fptr_temp2);
             }
-        }
-    }
-    if(winner != 1 && winner != -1){
-//bots won
-        FILE *fptr1 = fopen(name,"r");
-        if(!fptr1){
-            FILE *fptr2 = fopen(name,"w");
-            fputc('0',fptr2);
-        }
-        else {
+            for (int i = 0; name_without_txt[i] != '\0'; i++) {
+                fputc(name_without_txt[i], fptr_copy);
+            }
+            fputc('\n', fptr_copy);
+
+            FILE *fptr2 = fopen(name, "w");
+            fputc('2', fptr2);
+            fputc('0', fptr2);
+            fclose(fptr_copy2);
+        } else {
             char buff[10];
             char c = fgetc(fptr1);
             int buff_counter = 0;
@@ -1262,7 +1360,60 @@ int main()
                 c = fgetc(fptr1);
                 buff_counter++;
             }
-            fptr1 = fopen(name,"w");
+            fptr1 = fopen(name, "w");
+            int n = atoi(buff);
+            n += 20;
+            char text[10];
+            sprintf(text, "%d", n);
+            text[strlen(text)] = '\0';
+            int i = 0;
+            while (text[i] != '\0') {
+                fputc((int) text[i], fptr1);
+                i++;
+            }
+            fclose(fptr1);
+        }
+    }
+    if (winner != 1 && winner != -1) {
+//bots won
+        FILE *fptr1 = fopen(name, "r");
+        if (!fptr1) {
+            NewMember_flag = 1;
+            FILE *fptr_copy = fopen("names.txt", "r");
+            FILE *fptr_temp = fopen("temp.txt", "w");
+            char c = fgetc(fptr_copy);
+            while (c != EOF) {
+                fputc(c, fptr_temp);
+                c = fgetc(fptr_copy);
+            }
+            fclose(fptr_copy);
+            FILE *fptr_copy2 = fopen("names.txt", "w");
+            fclose(fptr_temp);
+            FILE *fptr_temp2 = fopen("temp.txt", "r");
+            c = fgetc(fptr_temp2);
+            while (c != EOF) {
+                fputc(c, fptr_copy2);
+                c = fgetc(fptr_temp2);
+            }
+            for (int i = 0; name_without_txt[i] != '\0'; i++) {
+                fputc(name_without_txt[i], fptr_copy);
+            }
+            fputc('\n', fptr_copy);
+
+            FILE *fptr2 = fopen(name, "w");
+            fputc('0', fptr2);
+            fclose(fptr_copy2);
+        } else {
+            char buff[10];
+            char c = fgetc(fptr1);
+            int buff_counter = 0;
+            while (c != EOF) {
+                buff[buff_counter] = c;
+                buff[buff_counter + 1] = '\0';
+                c = fgetc(fptr1);
+                buff_counter++;
+            }
+            fptr1 = fopen(name, "w");
             int n = atoi(buff);
             n -= 20;
             if (n <= 0)
@@ -1277,14 +1428,20 @@ int main()
                     i++;
                 }
             }
+            fclose(fptr1);
+        }
+    }
+        if (winner == 1 && NewMember_flag == 1) {
+            players[players_counter - 1].point = 20;
         }
 
-    }
+        fclose(fptr);
+        SDL_DestroyWindow(sdlWindow);
 
-    SDL_DestroyWindow(sdlWindow);
-
-    IMG_Quit();
-    TTF_Quit();
-    SDL_Quit();
-    return 0;
+        IMG_Quit();
+        TTF_CloseFont(font);
+        TTF_CloseFont(font2);
+        TTF_Quit();
+        SDL_Quit();
+        return 0;
 }

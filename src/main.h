@@ -14,6 +14,7 @@ extern const int SCREEN_WIDTH;
 extern const int SCREEN_HEIGHT;
 extern int the_chosen_map;
 extern int NUM_OF_PLAYERS;
+extern int players_counter;
 
 typedef struct tile{
     int width;
@@ -30,4 +31,10 @@ typedef struct tile{
 typedef struct map{
     tile tiles[MAX_TILES];
 }map;
+typedef struct names{
+    char user_name[35];
+    int point;
+    int rank;
+}names;
+names players[50];
 #endif //MYF_MAIN_H

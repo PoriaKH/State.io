@@ -21,6 +21,7 @@ extern int arrived_flag;
 extern int end_backup;
 extern int time_flag;
 extern TTF_Font* font;
+TTF_Font* font2;
 extern int on__exit;
 extern int start_game;
 extern char name[25];
@@ -41,5 +42,6 @@ void mainmenu(SDL_Renderer* sdlRenderer,map mps[]);
 void mainmenu_event(int* y_pointer);
 void choose_players(SDL_Renderer* sdlRenderer);
 void show_map(SDL_Renderer* sdlRenderer,int map_num,map mps[]);
+void create_text(SDL_Renderer *sdlRenderer,char* text,int x_text,int y_text,SDL_Color color);
 
 #endif //MYF_GRAPHIC_H
