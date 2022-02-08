@@ -33,6 +33,7 @@ int on_maps = 0;
 int on_map0 = 0;
 int on_map1 = 0;
 int on_map2 = 0;
+int on_map3 = 0;
 int on_leaderboard = 0;
 int on__exit = 0;
 int start_game = 0;
@@ -417,7 +418,7 @@ int potion_check(double x_soldiers[MAX_NUM_OF_SOLDIERS_AT_ALL],double y_soldiers
     Sint16 y_down = avg(tile0.y_o,tile1.y_o) + h / 2;
 
 
-    if((int)x_soldiers[0] >= x_up && (int)x_soldiers[0] <= x_down && (int)y_soldiers[0] >= y_up && (int)y_soldiers[0] <= y_down)
+    if(((int)x_soldiers[0] >= x_up && (int)x_soldiers[0] <= x_down && (int)y_soldiers[0] >= y_up && (int)y_soldiers[0] <= y_down) || ((int)x_soldiers[NUM_OF_SOLDIERS - 1] >= x_up && (int)x_soldiers[NUM_OF_SOLDIERS - 1] <= x_down && (int)y_soldiers[NUM_OF_SOLDIERS - 1] >= y_up && (int)y_soldiers[NUM_OF_SOLDIERS - 1] <= y_down))
         return 1;
     else
         return 0;
@@ -472,6 +473,22 @@ void draw_image_final(SDL_Renderer *sdlRenderer,int xp,int yp,char* address,int 
     SDL_DestroyTexture(myTexture);
 }
 void mainmenu_event(int* y_pointer) {
+    if(on_you_won || on_you_lost){
+        SDL_Event e;
+        SDL_PollEvent(&e);
+        if(e.type == SDL_MOUSEBUTTONDOWN) {
+            on_you_won = 0;
+            on_you_lost = 0;
+        }
+        if(e.type == SDL_MOUSEBUTTONUP) {
+            on_you_won = 0;
+            on_you_lost = 0;
+        }
+            if (e.type == SDL_KEYDOWN) {
+                on_you_won = 0;
+                on_you_lost = 0;
+        }
+    }
     if(on_leaderboard){
         SDL_Event e;
         SDL_PollEvent(&e);
@@ -518,7 +535,7 @@ void mainmenu_event(int* y_pointer) {
                     }
             }
         }
-    } if (on_maps) {
+    } if (on_maps && NUM_OF_PLAYERS != 2) {
         SDL_Event e;
         SDL_PollEvent(&e);
             if (e.type == SDL_KEYDOWN) {
@@ -566,12 +583,63 @@ void mainmenu_event(int* y_pointer) {
                 }
             }
         }
+    if (on_maps && NUM_OF_PLAYERS == 2) {
+        SDL_Event e;
+        SDL_PollEvent(&e);
+        if (e.type == SDL_KEYDOWN) {
+            switch (e.key.keysym.sym) {
+                case SDLK_DOWN:
+                    if (*y_pointer != 604)
+                        *y_pointer += 70;
+                    break;
+                case SDLK_UP:
+                    if (*y_pointer != 324)
+                        *y_pointer -= 70;
+                    break;
+                case SDLK_BACKSPACE:
+                    on_maps = 0;
+                    onmenu = 1;
+                    *y_pointer = 324;
+                    break;
+                case SDLK_SPACE: {
+
+                    if (*y_pointer == 324) {
+                        on_map0 = 1;
+                        on_maps = 0;
+                    }
+                    if (*y_pointer == 394) {
+                        on_map1 = 1;
+                        on_maps = 0;
+                    } else if (*y_pointer == 464) {
+                        on_map2 = 1;
+                        on_maps = 0;
+                    } else if (*y_pointer == 534) {
+                        on_map3 = 1;
+                        on_maps = 0;
+                    } else if (*y_pointer == 604) {
+                        int n = rand() % 3;
+                        if (n == 0) {
+                            on_map0 = 1;
+                            on_maps = 0;
+                        } else if (n == 1) {
+                            on_map1 = 1;
+                            on_maps = 0;
+                        } else if (n == 2) {
+                            on_map2 = 1;
+                            on_maps = 0;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
     if(on_map0){
         SDL_Event e;
         SDL_PollEvent(&e);
         if(e.key.keysym.sym == SDLK_BACKSPACE){
-            on_maps = 1;
-            on_map0 = 0;
+                on_maps = 1;
+                on_map0 = 0;
         }
         if(e.key.keysym.sym == SDLK_RETURN){
             the_chosen_map = 0;
@@ -604,6 +672,20 @@ void mainmenu_event(int* y_pointer) {
         if(e.key.keysym.sym == SDLK_RETURN){
             the_chosen_map = 2;
             on_map2 = 0;
+            onmenu = 0;
+            start_game = 1;
+        }
+    }
+    if(on_map3) {
+        SDL_Event e;
+        SDL_PollEvent(&e);
+        if (e.key.keysym.sym == SDLK_BACKSPACE) {
+            on_maps = 1;
+            on_map3 = 0;
+        }
+        if(e.key.keysym.sym == SDLK_RETURN){
+            the_chosen_map = 3;
+            on_map3 = 0;
             onmenu = 0;
             start_game = 1;
         }
@@ -643,6 +725,10 @@ void show_map(SDL_Renderer* sdlRenderer,int map_num,map mps[]){
     for(int i = 1; i < NUM_OF_TILES_FOR_EACH_MAP; i++) {
         boxColor(sdlRenderer, mps[map_num].tiles[i].x1, mps[map_num].tiles[i].y1, mps[map_num].tiles[i].x2, mps[map_num].tiles[i].y2,mps[map_num].tiles[i].b_color);
         filledCircleColor(sdlRenderer, mps[map_num].tiles[i].x_o, mps[map_num].tiles[i].y_o, cubes_r, mps[map_num].tiles[i].c_color);
+
+        SDL_SetRenderDrawColor(sdlRenderer,0xff,0xff,0xff,0xff);
+        SDL_Rect the_rect = {mps[map_num].tiles[i].x1,mps[map_num].tiles[i].y1,mps[map_num].tiles[i].height,mps[map_num].tiles[i].width};
+        SDL_RenderDrawRect(sdlRenderer,&the_rect);
     }
     SDL_RenderPresent(sdlRenderer);
 }
@@ -786,11 +872,21 @@ void mainmenu(SDL_Renderer* sdlRenderer,map mps[])
         }
         while (on_maps) {
             mainmenu_event(y_pointer_ptr);
-            draw_image_final(sdlRenderer, 0, 0, "../images/menu/menu.jpg", 800, 800);
-            draw_image_final(sdlRenderer, 300, 295, "../images/menu/map1.png", 200, 58);
-            draw_image_final(sdlRenderer, 300, 365, "../images/menu/map2.png", 200, 58);
-            draw_image_final(sdlRenderer, 300, 435, "../images/menu/map3.png", 200, 58);
-            draw_image_final(sdlRenderer, 300, 505, "../images/menu/random.png", 200, 58);
+            if(NUM_OF_PLAYERS != 2) {
+                draw_image_final(sdlRenderer, 0, 0, "../images/menu/menu.jpg", 800, 800);
+                draw_image_final(sdlRenderer, 300, 295, "../images/menu/map1.png", 200, 58);
+                draw_image_final(sdlRenderer, 300, 365, "../images/menu/map2.png", 200, 58);
+                draw_image_final(sdlRenderer, 300, 435, "../images/menu/map3.png", 200, 58);
+                draw_image_final(sdlRenderer, 300, 505, "../images/menu/random.png", 200, 58);
+            }
+            else {
+                draw_image_final(sdlRenderer, 0, 0, "../images/menu/menu.jpg", 800, 800);
+                draw_image_final(sdlRenderer, 300, 295, "../images/menu/map1.png", 200, 58);
+                draw_image_final(sdlRenderer, 300, 365, "../images/menu/map2.png", 200, 58);
+                draw_image_final(sdlRenderer, 300, 435, "../images/menu/map3.png", 200, 58);
+                draw_image_final(sdlRenderer, 300, 505, "../images/menu/map4.png", 200, 58);
+                draw_image_final(sdlRenderer, 300, 575, "../images/menu/random.png", 200, 58);
+            }
             draw_image_final(sdlRenderer,227,20,"../images/menu/pressspace.png",345,44);
             filledCircleRGBA(sdlRenderer, x_pointer, y_pointer, 24, 255, 0, 0, 255);
             SDL_RenderPresent(sdlRenderer);
@@ -813,6 +909,12 @@ void mainmenu(SDL_Renderer* sdlRenderer,map mps[])
             SDL_RenderClear(sdlRenderer);
             show_map(sdlRenderer,2,mps);
         }
+        while(on_map3){
+            mainmenu_event(y_pointer_ptr);
+            SDL_SetRenderDrawColor(sdlRenderer, 0xff, 0xff, 0xff, 0xff);
+            SDL_RenderClear(sdlRenderer);
+            show_map(sdlRenderer,3,mps);
+        }
         while(on_leaderboard){
             mainmenu_event(y_pointer_ptr);
             draw_image_final(sdlRenderer, 0, 0, "../images/menu/menu.jpg", 800, 800);
@@ -833,7 +935,7 @@ void mainmenu(SDL_Renderer* sdlRenderer,map mps[])
                 for(int j = 0; j < 5; j++)
                     text[j] = '\0';
                 sprintf(text,"%d",players[i].point);
-                int x_text = 313 + 283/2 - strlen(text) * 10;
+                int x_text = 313 + 283/2 - strlen(text) * 10 - 10;
                 create_text(sdlRenderer,text,x_text,y_text,color2);
                 y_text += 50;
                 if(y_text >= 750)

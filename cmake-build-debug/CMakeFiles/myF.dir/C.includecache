@@ -598,15 +598,17 @@ close_code.h
 
 ../sdl2/sdl2-include/close_code.h
 
-C:/Users/PoriaKP/CLionProjects/myF/src/graphic.h
+C:/Users/PoriaKP/Desktop/State.io/src/graphic.h
 SDL.h
 -
 SDL2_gfxPrimitives.h
 -
 main.h
-C:/Users/PoriaKP/CLionProjects/myF/src/main.h
+C:/Users/PoriaKP/Desktop/State.io/src/main.h
+SDL_ttf.h
+-
 
-C:/Users/PoriaKP/CLionProjects/myF/src/main.c
+C:/Users/PoriaKP/Desktop/State.io/src/main.c
 SDL.h
 -
 SDL2_gfxPrimitives.h
@@ -620,15 +622,17 @@ stdbool.h
 time.h
 -
 main.h
-C:/Users/PoriaKP/CLionProjects/myF/src/main.h
+C:/Users/PoriaKP/Desktop/State.io/src/main.h
 math.h
-C:/Users/PoriaKP/CLionProjects/myF/src/math.h
+C:/Users/PoriaKP/Desktop/State.io/src/math.h
 graphic.h
-C:/Users/PoriaKP/CLionProjects/myF/src/graphic.h
+C:/Users/PoriaKP/Desktop/State.io/src/graphic.h
 
-C:/Users/PoriaKP/CLionProjects/myF/src/main.h
+C:/Users/PoriaKP/Desktop/State.io/src/main.h
 SDL_quit.h
 -
+SDL_render.h
+-
 
-C:/Users/PoriaKP/CLionProjects/myF/src/math.h
+C:/Users/PoriaKP/Desktop/State.io/src/math.h
 

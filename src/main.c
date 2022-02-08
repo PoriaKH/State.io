@@ -20,21 +20,28 @@ int players_counter = 0;
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 800;
 const int FPS = 60;
-const int NUM_OF_MAPS = 3;
+int NUM_OF_MAPS = 3;
 const int min_width_of_tile = 70;
 const int min_height_of_tile = 70;
 const int cubes_r = 20;
 const int soldiers_r = 4;
+
+//soldiers speed
 float soldiers_speed_team1 = 0.07;
 float soldiers_speed_team2 = 0.07;
 float soldiers_speed_team3 = 0.07;
 float soldiers_speed_team4 = 0.07;
+//
+
 int NUM_OF_PLAYERS = 2;
 const int FIRST_NUM_OF_SOLDIERS = 12;
 const int FIRST_NUM_OF_SOLDIERS_TEAM_0 = 10;
 const int MAX_NUM_OF_SOLDIERS_TO_REACH = 50;
 const int MAX_NUM_OF_SOLDIERS_TO_REACH_TEAM0 = 10;
 const int MAX_NUM_OF_SOLDIERS_AT_ALL = 500;
+
+int on_you_won = 0;
+int on_you_lost = 0;
 
 int the_chosen_map = 0;
 int winner = -1;
@@ -90,15 +97,31 @@ void second_check(tile* c)
         c->x2 = SCREEN_HEIGHT;
 
 }
-void initialize_teams(map* c)
+void initialize_teams(map* c,int the_map)
 {
-    if(NUM_OF_PLAYERS == 2){
+    if(NUM_OF_PLAYERS == 2 && the_map == 1){
+        //NUM_OF_TILES_FOR_EACH_MAP = 13
+        int n1 = rand() % 12 + 1;
+        c->tiles[n1].team = 2;
+        c->tiles[n1].b_color = b_color2;
+        c->tiles[n1].c_color = c_color2;
+        c->tiles[n1].soldiers = FIRST_NUM_OF_SOLDIERS;
+        for(int i = 1; i < NUM_OF_TILES_FOR_EACH_MAP; i++){
+            if(i == n1)
+                continue;
+            c->tiles[i].team = 1;
+            c->tiles[i].b_color = b_color1;
+            c->tiles[i].c_color = c_color1;
+            c->tiles[i].soldiers = FIRST_NUM_OF_SOLDIERS;
+        }
+    }
+    if(NUM_OF_PLAYERS == 2 && the_map == 0){
         //blue, red
-        //NUM_OF_TILES_FOR_EACH_MAP = 8
-        int n1 = rand() % 7 + 1;
-        int n2 = rand() % 7 + 1;
+        //NUM_OF_TILES_FOR_EACH_MAP = 13
+        int n1 = rand() % 12 + 1;
+        int n2 = rand() % 12 + 1;
         while(n1 == n2){
-            n2 = rand() % 7 + 1;
+            n2 = rand() % 12 + 1;
         }
         c->tiles[n1].team = 1;
         c->tiles[n1].b_color = b_color1;
@@ -113,13 +136,13 @@ void initialize_teams(map* c)
         c->tiles[n2].soldiers = FIRST_NUM_OF_SOLDIERS;
         team1[1] = n2;
 
-        int n3 = rand() % 7 + 1;
+        int n3 = rand() % 12 + 1;
         while(n3 == n1 || n3 == n2){
-            n3 = rand() % 7 + 1;
+            n3 = rand() % 12 + 1;
         }
-        int n4 = rand() % 7 + 1;
+        int n4 = rand() % 12 + 1;
         while(n4 == n3 || n4 == n2 || n4 == n1){
-            n4 = rand() % 7 + 1;
+            n4 = rand() % 12 + 1;
         }
 
         c->tiles[n3].team = 2;
@@ -134,38 +157,17 @@ void initialize_teams(map* c)
         c->tiles[n4].soldiers = FIRST_NUM_OF_SOLDIERS;
         team2[1] = n4;
 
-        int n5 = rand() % 7 + 1;
-        while(n5 == n4 || n5 == n3 || n5 == n2 || n5 == n1){
-            n5 = rand() % 7 + 1;
-        }
-        int n6 = rand() % 7 + 1;
-        while(n6 == n5 || n6 == n4 || n6 == n3 || n6 == n2 || n6 == n1){
-            n6 = rand() % 7 + 1;
-        }
-        int i = 1;
-        for(;i < NUM_OF_TILES_FOR_EACH_MAP ; i++){
-            if(i != n1 && i != n2 && i != n3 && i != n4 && i != n5 && i != n6)
-                break;
-        }
-        int n7 = i;
+        for(int j = 1 ; j < NUM_OF_TILES_FOR_EACH_MAP; j++)
+        {
+            if(j == n1 || j == n2 || j == n3 || j == n4)
+                continue;
 
-        c->tiles[n5].team = 0;
-        c->tiles[n5].b_color = b_color_team_0;
-        c->tiles[n5].c_color = c_color_team_0;
-        c->tiles[n5].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
-        team0[0] = n5;
+            c->tiles[j].team = 0;
+            c->tiles[j].b_color = b_color_team_0;
+            c->tiles[j].c_color = c_color_team_0;
+            c->tiles[j].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
+        }
 
-        c->tiles[n6].team = 0;
-        c->tiles[n6].b_color = b_color_team_0;
-        c->tiles[n6].c_color = c_color_team_0;
-        c->tiles[n6].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
-        team0[1] = n6;
-
-        c->tiles[n7].team = 0;
-        c->tiles[n7].b_color = b_color_team_0;
-        c->tiles[n7].c_color = c_color_team_0;
-        c->tiles[n7].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
-        team0[2] = n7;
     }
     if(NUM_OF_PLAYERS == 3){
         //blue, red and pink
@@ -238,6 +240,7 @@ void initialize_teams(map* c)
         c->tiles[n7].c_color = c_color_team_0;
         c->tiles[n7].soldiers = FIRST_NUM_OF_SOLDIERS_TEAM_0;
         team0[3] = n7;
+
     }
     if(NUM_OF_PLAYERS == 4){
         //blue, red, pink and yellow
@@ -375,6 +378,39 @@ void players_sort(int players_counter)
         }
     }
 }
+int shall_attack(map mps,int i,int j,int using_potion,int power_num,int who_is_using_potion,int k)
+{
+    if(mps.tiles[i].soldiers <= mps.tiles[j].soldiers)
+        return 0;
+
+    int r_x = (mps.tiles[j].x_o - mps.tiles[i].x_o) * (mps.tiles[j].x_o - mps.tiles[i].x_o);
+    int r_y = (mps.tiles[j].y_o - mps.tiles[i].y_o) * (mps.tiles[j].y_o - mps.tiles[i].y_o);
+    float delta_R =sqrtf((float)r_x + (float)r_y);
+    float soldiers_sp;
+
+    if(mps.tiles[i].team == 2)
+        soldiers_sp = soldiers_speed_team2;
+    if(mps.tiles[i].team == 3)
+        soldiers_sp = soldiers_speed_team3;
+    if(mps.tiles[i].team == 4)
+        soldiers_sp = soldiers_speed_team4;
+
+    soldiers_sp = soldiers_sp * 89 / 0.07;
+
+    float delta_T = delta_R / soldiers_sp;
+    if(!using_potion || (using_potion == 1 && power_num != 4)) {
+        if (mps.tiles[i].soldiers > mps.tiles[j].soldiers + (int) (delta_T * 1))
+            return 1;
+        else
+            return 0;
+    }
+    if(using_potion && power_num == 4 && mps.tiles[j].team == who_is_using_potion){
+        if (mps.tiles[i].soldiers > mps.tiles[j].soldiers + (int) (delta_T * k))
+            return 1;
+        else
+            return 0;
+    }
+}
 int main() {
     // <----> Height
     int flags = IMG_INIT_PNG;
@@ -388,8 +424,19 @@ int main() {
     }
     TTF_Init();
 
+    SDL_Window *sdlWindow = SDL_CreateWindow("Test_Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                                             SCREEN_WIDTH,
+                                             SCREEN_HEIGHT, SDL_WINDOW_OPENGL);
+
+    SDL_Renderer *sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
+    choose_players(sdlRenderer);
+    if (on__exit == 1)
+        return 0;
+
     if (NUM_OF_PLAYERS == 2) {
-        NUM_OF_TILES_FOR_EACH_MAP = 8;
+        //NUM_OF_TILES_FOR_EACH_MAP = 8;
+        NUM_OF_TILES_FOR_EACH_MAP = 13;
+        NUM_OF_MAPS = 4;
     }
     if (NUM_OF_PLAYERS == 3) {
         NUM_OF_TILES_FOR_EACH_MAP = 8;
@@ -416,6 +463,10 @@ int main() {
         if (k == 2) {
             x_lines = 11;
             y_lines = 7;
+        }
+        if (k == 3) {
+            x_lines = 10;
+            y_lines = 5;
         }
 
         int x[y_lines + 1];
@@ -518,23 +569,15 @@ int main() {
         }
     }
 
-
-    SDL_Window *sdlWindow = SDL_CreateWindow("Test_Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                                             SCREEN_WIDTH,
-                                             SCREEN_HEIGHT, SDL_WINDOW_OPENGL);
-
-    SDL_Renderer *sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
-
-    choose_players(sdlRenderer);
-    if (on__exit == 1)
-        return 0;
-
     map *c0 = &mps[0];
     map *c1 = &mps[1];
     map *c2 = &mps[2];
-    initialize_teams(c0);
-    initialize_teams(c1);
-    initialize_teams(c2);
+    map *c3 = &mps[3];
+    initialize_teams(c0,0);
+    initialize_teams(c1,0);
+    initialize_teams(c2,0);
+    if(NUM_OF_PLAYERS == 2)
+        initialize_teams(c3,1);
 
     for (int i = 0; i < 50; i++) {
         for (int j = 0; j < 35; j++) {
@@ -564,14 +607,13 @@ int main() {
             text[i] = '\0';
 
         int text_counter = 0;
-        printf("\n");
-        printf("name=%s\n", players[players_counter].user_name);
+
         while (c2 != EOF) {
             text[text_counter] = c2;
             text_counter++;
             c2 = fgetc(fptr2);
         }
-        printf("text=%s\n", text);
+
         int n = atoi(text);
         players[players_counter].point = n;
 
@@ -580,24 +622,13 @@ int main() {
     }
 
 
-    printf("players_counter=%d\n", players_counter);
-
-    for (int i = 0; i < players_counter; i++) {
-        printf("%s          %d\n", players[i].user_name, players[i].point);
-    }
-
-
     players_sort(players_counter);
-    for(int i = 0; i < players_counter; i++){
+    for (int i = 0; i < players_counter; i++) {
         int n = strlen(players[i].user_name);
         players[i].user_name[n - 1] = '\0';
         players[i].user_name[n - 2] = '\0';
         players[i].user_name[n - 3] = '\0';
         players[i].user_name[n - 4] = '\0';
-    }
-    printf("after:\n");
-    for (int i = 0; i < players_counter; i++) {
-        printf("%s          %d\n", players[i].user_name, players[i].point);
     }
 
 //show menu
@@ -648,6 +679,7 @@ int main() {
     time_t power_end_copy = 0;
     time_t power_start = time(NULL);
 
+
     SDL_bool shallExit = SDL_FALSE;
     while (shallExit == SDL_FALSE) {
 
@@ -670,6 +702,10 @@ int main() {
             boxColor(sdlRenderer, mps[the_chosen_map].tiles[i].x1, mps[the_chosen_map].tiles[i].y1,
                      mps[the_chosen_map].tiles[i].x2, mps[the_chosen_map].tiles[i].y2,
                      mps[the_chosen_map].tiles[i].b_color);
+
+            SDL_SetRenderDrawColor(sdlRenderer,0xff,0xff,0xff,0xff);
+            SDL_Rect the_rect = {mps[the_chosen_map].tiles[i].x1,mps[the_chosen_map].tiles[i].y1,mps[the_chosen_map].tiles[i].height,mps[the_chosen_map].tiles[i].width};
+            SDL_RenderDrawRect(sdlRenderer,&the_rect);
 
             filledCircleColor(sdlRenderer, mps[the_chosen_map].tiles[i].x_o, mps[the_chosen_map].tiles[i].y_o, cubes_r,
                               mps[the_chosen_map].tiles[i].c_color);
@@ -719,7 +755,7 @@ int main() {
                             mps[the_chosen_map].tiles[i].soldiers = MAX_NUM_OF_SOLDIERS_TO_REACH;
                         time_flag = 1;
                     }
-                } else {
+                } /* else { //team0 soldiers increasing
                     if (mps[the_chosen_map].tiles[i].soldiers >= MAX_NUM_OF_SOLDIERS_TO_REACH_TEAM0) {
                         time_flag = 1;
                     }
@@ -729,7 +765,7 @@ int main() {
                             mps[the_chosen_map].tiles[i].soldiers = MAX_NUM_OF_SOLDIERS_TO_REACH_TEAM0;
                         time_flag = 1;
                     }
-                }
+                } */
             }
         }
 //draw image
@@ -800,7 +836,8 @@ int main() {
                         if (mps[the_chosen_map].tiles[i].team == 2) {
                             for (int j = 1; j < NUM_OF_TILES_FOR_EACH_MAP; j++) {
                                 if (mps[the_chosen_map].tiles[j].team == 1) {
-                                    if (mps[the_chosen_map].tiles[j].soldiers < mps[the_chosen_map].tiles[i].soldiers) {
+                                    if(shall_attack(mps[the_chosen_map],i,j,using_potion,power_num,who_is_using_potion,k)){
+//                                    if (mps[the_chosen_map].tiles[j].soldiers < mps[the_chosen_map].tiles[i].soldiers) {
                                         s = i;
                                         e = j;
                                         tr = 0;
@@ -818,8 +855,7 @@ int main() {
                                 if (mps[the_chosen_map].tiles[i].team == 2) {
                                     for (int j = 1; j < NUM_OF_TILES_FOR_EACH_MAP; j++) {
                                         if (mps[the_chosen_map].tiles[j].team == 0) {
-                                            if (mps[the_chosen_map].tiles[j].soldiers <
-                                                mps[the_chosen_map].tiles[i].soldiers) {
+                                            if (mps[the_chosen_map].tiles[j].soldiers < mps[the_chosen_map].tiles[i].soldiers) {
                                                 s = i;
                                                 e = j;
                                                 tr = 0;
@@ -934,7 +970,8 @@ int main() {
                         if (mps[the_chosen_map].tiles[i].team == 2 || mps[the_chosen_map].tiles[i].team == 3) {
                             for (int j = 1; j < NUM_OF_TILES_FOR_EACH_MAP; j++) {
                                 if (mps[the_chosen_map].tiles[j].team == 1) {
-                                    if (mps[the_chosen_map].tiles[j].soldiers < mps[the_chosen_map].tiles[i].soldiers) {
+                                    if(shall_attack(mps[the_chosen_map],i,j,using_potion,power_num,who_is_using_potion,k)){
+//                                    if (mps[the_chosen_map].tiles[j].soldiers < mps[the_chosen_map].tiles[i].soldiers) {
                                         s = i;
                                         e = j;
                                         tr = 0;
@@ -1068,7 +1105,8 @@ int main() {
                             mps[the_chosen_map].tiles[i].team == 4) {
                             for (int j = 1; j < NUM_OF_TILES_FOR_EACH_MAP; j++) {
                                 if (mps[the_chosen_map].tiles[j].team == 1) {
-                                    if (mps[the_chosen_map].tiles[j].soldiers < mps[the_chosen_map].tiles[i].soldiers) {
+                                    if(shall_attack(mps[the_chosen_map],i,j,using_potion,power_num,who_is_using_potion,k)){
+//                                    if (mps[the_chosen_map].tiles[j].soldiers < mps[the_chosen_map].tiles[i].soldiers) {
                                         s = i;
                                         e = j;
                                         tr = 0;
@@ -1196,6 +1234,8 @@ int main() {
             SDL_Event event;
             if (click(event) == 1) {
                 start = is_valid_start(mps[the_chosen_map]);
+                if(mps[the_chosen_map].tiles[start].team != 1)
+                    start = -1;
                 end = is_valid_end(mps[the_chosen_map], start);
                 end_backup = end;
 
@@ -1222,6 +1262,7 @@ int main() {
                           on_potion_pointer, using_potion_pointer, power_start_pointer, soldiers_speed_team1_pointer,
                           soldiers_speed_team2_pointer, soldiers_speed_team3_pointer, soldiers_speed_team4_pointer,
                           power_num, who_is_using_potion_pointer);
+
 
             if (on_potion)
                 if (potion_check(x_soldiers, y_soldiers, mps[the_chosen_map].tiles[tile0],
@@ -1316,109 +1357,73 @@ int main() {
                     break;
             }
         }
-
     }
 
     int NewMember_flag = 0;
-    if (winner == 1) {
-//we won
-        FILE *fptr1 = fopen(name, "r");
-        if (!fptr1) {
-            NewMember_flag = 1;
-            FILE *fptr_copy = fopen("names.txt", "r");
-            FILE *fptr_temp = fopen("temp.txt", "w");
-            char c = fgetc(fptr_copy);
-            while (c != EOF) {
-                fputc(c, fptr_temp);
-                c = fgetc(fptr_copy);
-            }
-            fclose(fptr_copy);
-            FILE *fptr_copy2 = fopen("names.txt", "w");
-            fclose(fptr_temp);
-            FILE *fptr_temp2 = fopen("temp.txt", "r");
-            c = fgetc(fptr_temp2);
-            while (c != EOF) {
-                fputc(c, fptr_copy2);
-                c = fgetc(fptr_temp2);
-            }
-            for (int i = 0; name_without_txt[i] != '\0'; i++) {
-                fputc(name_without_txt[i], fptr_copy);
-            }
-            fputc('\n', fptr_copy);
+    if(winner != -1) {
+        if (winner == 1)
+            on_you_won = 1;
+        if (winner != 1)
+            on_you_lost = 1;
 
-            FILE *fptr2 = fopen(name, "w");
-            fputc('2', fptr2);
-            fputc('0', fptr2);
-            fclose(fptr_copy2);
-        } else {
-            char buff[10];
-            char c = fgetc(fptr1);
-            int buff_counter = 0;
-            while (c != EOF) {
-                buff[buff_counter] = c;
-                buff[buff_counter + 1] = '\0';
-                c = fgetc(fptr1);
-                buff_counter++;
-            }
-            fptr1 = fopen(name, "w");
-            int n = atoi(buff);
-            n += 20;
-            char text[10];
-            sprintf(text, "%d", n);
-            text[strlen(text)] = '\0';
-            int i = 0;
-            while (text[i] != '\0') {
-                fputc((int) text[i], fptr1);
-                i++;
-            }
-            fclose(fptr1);
+        while(on_you_won) {
+            int temp = 5;
+            int* temp_ptr = &temp;
+            mainmenu_event(temp_ptr);
+            draw_image_final(sdlRenderer, 0, 0, "../images/menu/youwon.png", 800, 800);
+            SDL_RenderPresent(sdlRenderer);
+        }
+        while(on_you_lost) {
+            int temp = 5;
+            int* temp_ptr = &temp;
+            mainmenu_event(temp_ptr);
+            draw_image_final(sdlRenderer, 0, 0, "../images/menu/youlost.png", 800, 800);
+            SDL_RenderPresent(sdlRenderer);
         }
     }
-    if (winner != 1 && winner != -1) {
-//bots won
-        FILE *fptr1 = fopen(name, "r");
-        if (!fptr1) {
-            NewMember_flag = 1;
-            FILE *fptr_copy = fopen("names.txt", "r");
-            FILE *fptr_temp = fopen("temp.txt", "w");
-            char c = fgetc(fptr_copy);
-            while (c != EOF) {
-                fputc(c, fptr_temp);
-                c = fgetc(fptr_copy);
-            }
-            fclose(fptr_copy);
-            FILE *fptr_copy2 = fopen("names.txt", "w");
-            fclose(fptr_temp);
-            FILE *fptr_temp2 = fopen("temp.txt", "r");
-            c = fgetc(fptr_temp2);
-            while (c != EOF) {
-                fputc(c, fptr_copy2);
+        if (winner == 1) {
+//we won
+            FILE *fptr1 = fopen(name, "r");
+            if (!fptr1) {
+                NewMember_flag = 1;
+                FILE *fptr_copy = fopen("names.txt", "r");
+                FILE *fptr_temp = fopen("temp.txt", "w");
+                char c = fgetc(fptr_copy);
+                while (c != EOF) {
+                    fputc(c, fptr_temp);
+                    c = fgetc(fptr_copy);
+                }
+                fclose(fptr_copy);
+                FILE *fptr_copy2 = fopen("names.txt", "w");
+                fclose(fptr_temp);
+                FILE *fptr_temp2 = fopen("temp.txt", "r");
                 c = fgetc(fptr_temp2);
-            }
-            for (int i = 0; name_without_txt[i] != '\0'; i++) {
-                fputc(name_without_txt[i], fptr_copy);
-            }
-            fputc('\n', fptr_copy);
+                while (c != EOF) {
+                    fputc(c, fptr_copy2);
+                    c = fgetc(fptr_temp2);
+                }
+                for (int i = 0; name_without_txt[i] != '\0'; i++) {
+                    fputc(name_without_txt[i], fptr_copy);
+                }
+                fputc('\n', fptr_copy);
 
-            FILE *fptr2 = fopen(name, "w");
-            fputc('0', fptr2);
-            fclose(fptr_copy2);
-        } else {
-            char buff[10];
-            char c = fgetc(fptr1);
-            int buff_counter = 0;
-            while (c != EOF) {
-                buff[buff_counter] = c;
-                buff[buff_counter + 1] = '\0';
-                c = fgetc(fptr1);
-                buff_counter++;
-            }
-            fptr1 = fopen(name, "w");
-            int n = atoi(buff);
-            n -= 20;
-            if (n <= 0)
-                fputc('0', fptr1);
-            else {
+                FILE *fptr2 = fopen(name, "w");
+                fputc('2', fptr2);
+                fputc('0', fptr2);
+                fclose(fptr_copy2);
+            } else {
+                char buff[10];
+                char c = fgetc(fptr1);
+                int buff_counter = 0;
+                while (c != EOF) {
+                    buff[buff_counter] = c;
+                    buff[buff_counter + 1] = '\0';
+                    c = fgetc(fptr1);
+                    buff_counter++;
+                }
+                fptr1 = fopen(name, "w");
+                int n = atoi(buff);
+                n += 20;
                 char text[10];
                 sprintf(text, "%d", n);
                 text[strlen(text)] = '\0';
@@ -1427,10 +1432,66 @@ int main() {
                     fputc((int) text[i], fptr1);
                     i++;
                 }
+                fclose(fptr1);
             }
-            fclose(fptr1);
         }
-    }
+        if (winner != 1 && winner != -1) {
+//bots won
+            FILE *fptr1 = fopen(name, "r");
+            if (!fptr1) {
+                NewMember_flag = 1;
+                FILE *fptr_copy = fopen("names.txt", "r");
+                FILE *fptr_temp = fopen("temp.txt", "w");
+                char c = fgetc(fptr_copy);
+                while (c != EOF) {
+                    fputc(c, fptr_temp);
+                    c = fgetc(fptr_copy);
+                }
+                fclose(fptr_copy);
+                FILE *fptr_copy2 = fopen("names.txt", "w");
+                fclose(fptr_temp);
+                FILE *fptr_temp2 = fopen("temp.txt", "r");
+                c = fgetc(fptr_temp2);
+                while (c != EOF) {
+                    fputc(c, fptr_copy2);
+                    c = fgetc(fptr_temp2);
+                }
+                for (int i = 0; name_without_txt[i] != '\0'; i++) {
+                    fputc(name_without_txt[i], fptr_copy);
+                }
+                fputc('\n', fptr_copy);
+
+                FILE *fptr2 = fopen(name, "w");
+                fputc('0', fptr2);
+                fclose(fptr_copy2);
+            } else {
+                char buff[10];
+                char c = fgetc(fptr1);
+                int buff_counter = 0;
+                while (c != EOF) {
+                    buff[buff_counter] = c;
+                    buff[buff_counter + 1] = '\0';
+                    c = fgetc(fptr1);
+                    buff_counter++;
+                }
+                fptr1 = fopen(name, "w");
+                int n = atoi(buff);
+                n -= 20;
+                if (n <= 0)
+                    fputc('0', fptr1);
+                else {
+                    char text[10];
+                    sprintf(text, "%d", n);
+                    text[strlen(text)] = '\0';
+                    int i = 0;
+                    while (text[i] != '\0') {
+                        fputc((int) text[i], fptr1);
+                        i++;
+                    }
+                }
+                fclose(fptr1);
+            }
+        }
         if (winner == 1 && NewMember_flag == 1) {
             players[players_counter - 1].point = 20;
         }

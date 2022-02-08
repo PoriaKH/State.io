@@ -42,6 +42,7 @@ CMakeFiles/myF.dir/src/graphic.c.obj: ../sdl2/sdl2-include/SDL_system.h
 CMakeFiles/myF.dir/src/graphic.c.obj: ../sdl2/sdl2-include/SDL_thread.h
 CMakeFiles/myF.dir/src/graphic.c.obj: ../sdl2/sdl2-include/SDL_timer.h
 CMakeFiles/myF.dir/src/graphic.c.obj: ../sdl2/sdl2-include/SDL_touch.h
+CMakeFiles/myF.dir/src/graphic.c.obj: ../sdl2/sdl2-include/SDL_ttf.h
 CMakeFiles/myF.dir/src/graphic.c.obj: ../sdl2/sdl2-include/SDL_version.h
 CMakeFiles/myF.dir/src/graphic.c.obj: ../sdl2/sdl2-include/SDL_video.h
 CMakeFiles/myF.dir/src/graphic.c.obj: ../sdl2/sdl2-include/begin_code.h
@@ -102,11 +103,19 @@ CMakeFiles/myF.dir/src/main.c.obj: ../src/main.c
 CMakeFiles/myF.dir/src/main.c.obj: ../src/main.h
 CMakeFiles/myF.dir/src/main.c.obj: ../src/math.h
 
+CMakeFiles/myF.dir/src/math.c.obj: ../sdl2/sdl2-include/SDL_blendmode.h
 CMakeFiles/myF.dir/src/math.c.obj: ../sdl2/sdl2-include/SDL_config.h
+CMakeFiles/myF.dir/src/math.c.obj: ../sdl2/sdl2-include/SDL_endian.h
 CMakeFiles/myF.dir/src/math.c.obj: ../sdl2/sdl2-include/SDL_error.h
+CMakeFiles/myF.dir/src/math.c.obj: ../sdl2/sdl2-include/SDL_pixels.h
 CMakeFiles/myF.dir/src/math.c.obj: ../sdl2/sdl2-include/SDL_platform.h
 CMakeFiles/myF.dir/src/math.c.obj: ../sdl2/sdl2-include/SDL_quit.h
+CMakeFiles/myF.dir/src/math.c.obj: ../sdl2/sdl2-include/SDL_rect.h
+CMakeFiles/myF.dir/src/math.c.obj: ../sdl2/sdl2-include/SDL_render.h
+CMakeFiles/myF.dir/src/math.c.obj: ../sdl2/sdl2-include/SDL_rwops.h
 CMakeFiles/myF.dir/src/math.c.obj: ../sdl2/sdl2-include/SDL_stdinc.h
+CMakeFiles/myF.dir/src/math.c.obj: ../sdl2/sdl2-include/SDL_surface.h
+CMakeFiles/myF.dir/src/math.c.obj: ../sdl2/sdl2-include/SDL_video.h
 CMakeFiles/myF.dir/src/math.c.obj: ../sdl2/sdl2-include/begin_code.h
 CMakeFiles/myF.dir/src/math.c.obj: ../sdl2/sdl2-include/close_code.h
 CMakeFiles/myF.dir/src/math.c.obj: ../src/main.h

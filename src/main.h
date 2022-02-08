@@ -9,12 +9,14 @@
 #include <SDL_render.h>
 extern int NUM_OF_TILES_FOR_EACH_MAP;
 extern const int cubes_r;
-extern const int NUM_OF_MAPS;
+extern int NUM_OF_MAPS;
 extern const int SCREEN_WIDTH;
 extern const int SCREEN_HEIGHT;
 extern int the_chosen_map;
 extern int NUM_OF_PLAYERS;
 extern int players_counter;
+extern int on_you_won;
+extern int on_you_lost;
 
 typedef struct tile{
     int width;

@@ -4,9 +4,9 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "C:/Users/PoriaKP/CLionProjects/myF/src/graphic.c" "C:/Users/PoriaKP/CLionProjects/myF/cmake-build-debug/CMakeFiles/myF.dir/src/graphic.c.obj"
-  "C:/Users/PoriaKP/CLionProjects/myF/src/main.c" "C:/Users/PoriaKP/CLionProjects/myF/cmake-build-debug/CMakeFiles/myF.dir/src/main.c.obj"
-  "C:/Users/PoriaKP/CLionProjects/myF/src/math.c" "C:/Users/PoriaKP/CLionProjects/myF/cmake-build-debug/CMakeFiles/myF.dir/src/math.c.obj"
+  "C:/Users/PoriaKP/Desktop/State.io/src/graphic.c" "C:/Users/PoriaKP/Desktop/State.io/cmake-build-debug/CMakeFiles/myF.dir/src/graphic.c.obj"
+  "C:/Users/PoriaKP/Desktop/State.io/src/main.c" "C:/Users/PoriaKP/Desktop/State.io/cmake-build-debug/CMakeFiles/myF.dir/src/main.c.obj"
+  "C:/Users/PoriaKP/Desktop/State.io/src/math.c" "C:/Users/PoriaKP/Desktop/State.io/cmake-build-debug/CMakeFiles/myF.dir/src/math.c.obj"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 

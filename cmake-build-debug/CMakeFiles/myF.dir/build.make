@@ -42,10 +42,10 @@ RM = "C:\Program Files\JetBrains\CLion 2019.2.4_2\bin\cmake\win\bin\cmake.exe" -
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = C:\Users\PoriaKP\CLionProjects\myF
+CMAKE_SOURCE_DIR = C:\Users\PoriaKP\Desktop\State.io
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = C:\Users\PoriaKP\CLionProjects\myF\cmake-build-debug
+CMAKE_BINARY_DIR = C:\Users\PoriaKP\Desktop\State.io\cmake-build-debug
 
 # Include any dependencies generated for this target.
 include CMakeFiles/myF.dir/depend.make
@@ -59,44 +59,44 @@ include CMakeFiles/myF.dir/flags.make
 CMakeFiles/myF.dir/src/graphic.c.obj: CMakeFiles/myF.dir/flags.make
 CMakeFiles/myF.dir/src/graphic.c.obj: CMakeFiles/myF.dir/includes_C.rsp
 CMakeFiles/myF.dir/src/graphic.c.obj: ../src/graphic.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\PoriaKP\CLionProjects\myF\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/myF.dir/src/graphic.c.obj"
-	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles\myF.dir\src\graphic.c.obj   -c C:\Users\PoriaKP\CLionProjects\myF\src\graphic.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\PoriaKP\Desktop\State.io\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/myF.dir/src/graphic.c.obj"
+	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles\myF.dir\src\graphic.c.obj   -c C:\Users\PoriaKP\Desktop\State.io\src\graphic.c
 
 CMakeFiles/myF.dir/src/graphic.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/myF.dir/src/graphic.c.i"
-	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Users\PoriaKP\CLionProjects\myF\src\graphic.c > CMakeFiles\myF.dir\src\graphic.c.i
+	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Users\PoriaKP\Desktop\State.io\src\graphic.c > CMakeFiles\myF.dir\src\graphic.c.i
 
 CMakeFiles/myF.dir/src/graphic.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/myF.dir/src/graphic.c.s"
-	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Users\PoriaKP\CLionProjects\myF\src\graphic.c -o CMakeFiles\myF.dir\src\graphic.c.s
+	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Users\PoriaKP\Desktop\State.io\src\graphic.c -o CMakeFiles\myF.dir\src\graphic.c.s
 
 CMakeFiles/myF.dir/src/main.c.obj: CMakeFiles/myF.dir/flags.make
 CMakeFiles/myF.dir/src/main.c.obj: CMakeFiles/myF.dir/includes_C.rsp
 CMakeFiles/myF.dir/src/main.c.obj: ../src/main.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\PoriaKP\CLionProjects\myF\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/myF.dir/src/main.c.obj"
-	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles\myF.dir\src\main.c.obj   -c C:\Users\PoriaKP\CLionProjects\myF\src\main.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\PoriaKP\Desktop\State.io\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/myF.dir/src/main.c.obj"
+	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles\myF.dir\src\main.c.obj   -c C:\Users\PoriaKP\Desktop\State.io\src\main.c
 
 CMakeFiles/myF.dir/src/main.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/myF.dir/src/main.c.i"
-	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Users\PoriaKP\CLionProjects\myF\src\main.c > CMakeFiles\myF.dir\src\main.c.i
+	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Users\PoriaKP\Desktop\State.io\src\main.c > CMakeFiles\myF.dir\src\main.c.i
 
 CMakeFiles/myF.dir/src/main.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/myF.dir/src/main.c.s"
-	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Users\PoriaKP\CLionProjects\myF\src\main.c -o CMakeFiles\myF.dir\src\main.c.s
+	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Users\PoriaKP\Desktop\State.io\src\main.c -o CMakeFiles\myF.dir\src\main.c.s
 
 CMakeFiles/myF.dir/src/math.c.obj: CMakeFiles/myF.dir/flags.make
 CMakeFiles/myF.dir/src/math.c.obj: CMakeFiles/myF.dir/includes_C.rsp
 CMakeFiles/myF.dir/src/math.c.obj: ../src/math.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\PoriaKP\CLionProjects\myF\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/myF.dir/src/math.c.obj"
-	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles\myF.dir\src\math.c.obj   -c C:\Users\PoriaKP\CLionProjects\myF\src\math.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\PoriaKP\Desktop\State.io\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/myF.dir/src/math.c.obj"
+	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles\myF.dir\src\math.c.obj   -c C:\Users\PoriaKP\Desktop\State.io\src\math.c
 
 CMakeFiles/myF.dir/src/math.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/myF.dir/src/math.c.i"
-	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Users\PoriaKP\CLionProjects\myF\src\math.c > CMakeFiles\myF.dir\src\math.c.i
+	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Users\PoriaKP\Desktop\State.io\src\math.c > CMakeFiles\myF.dir\src\math.c.i
 
 CMakeFiles/myF.dir/src/math.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/myF.dir/src/math.c.s"
-	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Users\PoriaKP\CLionProjects\myF\src\math.c -o CMakeFiles\myF.dir\src\math.c.s
+	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Users\PoriaKP\Desktop\State.io\src\math.c -o CMakeFiles\myF.dir\src\math.c.s
 
 # Object files for target myF
 myF_OBJECTS = \
@@ -121,7 +121,7 @@ myF.exe: ../sdl2/sdl2-ttf-lib/libSDL2_ttf.dll.a
 myF.exe: CMakeFiles/myF.dir/linklibs.rsp
 myF.exe: CMakeFiles/myF.dir/objects1.rsp
 myF.exe: CMakeFiles/myF.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\PoriaKP\CLionProjects\myF\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking C executable myF.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\PoriaKP\Desktop\State.io\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking C executable myF.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\myF.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -134,6 +134,6 @@ CMakeFiles/myF.dir/clean:
 .PHONY : CMakeFiles/myF.dir/clean
 
 CMakeFiles/myF.dir/depend:
-	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" C:\Users\PoriaKP\CLionProjects\myF C:\Users\PoriaKP\CLionProjects\myF C:\Users\PoriaKP\CLionProjects\myF\cmake-build-debug C:\Users\PoriaKP\CLionProjects\myF\cmake-build-debug C:\Users\PoriaKP\CLionProjects\myF\cmake-build-debug\CMakeFiles\myF.dir\DependInfo.cmake --color=$(COLOR)
+	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" C:\Users\PoriaKP\Desktop\State.io C:\Users\PoriaKP\Desktop\State.io C:\Users\PoriaKP\Desktop\State.io\cmake-build-debug C:\Users\PoriaKP\Desktop\State.io\cmake-build-debug C:\Users\PoriaKP\Desktop\State.io\cmake-build-debug\CMakeFiles\myF.dir\DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/myF.dir/depend
 
