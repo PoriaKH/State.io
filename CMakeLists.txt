@@ -1,5 +1,5 @@
 set(SOURCE project_source)
-set(PROJECT_NAME project_name)
+set(PROJECT_NAME myF)
 
 cmake_minimum_required(VERSION 3.21)
 project(${PROJECT_NAME} C)
