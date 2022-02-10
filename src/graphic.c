@@ -190,6 +190,8 @@ void send_soldiers(map* c,int start,int end,SDL_Renderer *sdlRenderer,double x_s
                     if(friend_or_enemy == 1) {
                         if(c->tiles[end].soldiers + 2 <= MAX_NUM_OF_SOLDIERS_AT_ALL)
                             c->tiles[end].soldiers += 2;
+                        else
+                            c->tiles[end].soldiers = MAX_NUM_OF_SOLDIERS_AT_ALL;
                     }
                     else if(friend_or_enemy == -1) {
                         if(c->tiles[end].soldiers - 2 >= 0)
@@ -337,6 +339,8 @@ void send_soldiers(map* c,int start,int end,SDL_Renderer *sdlRenderer,double x_s
                 if (friend_or_enemy == 1) {
                     if(c->tiles[end].soldiers + damage <= MAX_NUM_OF_SOLDIERS_AT_ALL)
                         c->tiles[end].soldiers += damage;
+                    else
+                        c->tiles[end].soldiers = MAX_NUM_OF_SOLDIERS_AT_ALL;
                 }
                 else if (friend_or_enemy == -1) {
                     if (c->tiles[end].soldiers - damage >= 0)
@@ -617,7 +621,7 @@ void mainmenu_event(int* y_pointer) {
                         on_map3 = 1;
                         on_maps = 0;
                     } else if (*y_pointer == 604) {
-                        int n = rand() % 3;
+                        int n = rand() % 4;
                         if (n == 0) {
                             on_map0 = 1;
                             on_maps = 0;
@@ -626,6 +630,9 @@ void mainmenu_event(int* y_pointer) {
                             on_maps = 0;
                         } else if (n == 2) {
                             on_map2 = 1;
+                            on_maps = 0;
+                        } else if (n == 3) {
+                            on_map3 = 1;
                             on_maps = 0;
                         }
                     }
@@ -637,7 +644,7 @@ void mainmenu_event(int* y_pointer) {
     if(on_map0){
         SDL_Event e;
         SDL_PollEvent(&e);
-        if(e.key.keysym.sym == SDLK_BACKSPACE){
+        if(e.key.keysym.sym == SDLK_BACKSPACE || e.key.keysym.sym == SDLK_ESCAPE){
                 on_maps = 1;
                 on_map0 = 0;
         }
@@ -651,7 +658,7 @@ void mainmenu_event(int* y_pointer) {
     if(on_map1) {
         SDL_Event e;
         SDL_PollEvent(&e);
-        if (e.key.keysym.sym == SDLK_BACKSPACE) {
+        if (e.key.keysym.sym == SDLK_BACKSPACE || e.key.keysym.sym == SDLK_ESCAPE) {
             on_maps = 1;
             on_map1 = 0;
         }
@@ -665,7 +672,7 @@ void mainmenu_event(int* y_pointer) {
     if(on_map2) {
         SDL_Event e;
         SDL_PollEvent(&e);
-        if (e.key.keysym.sym == SDLK_BACKSPACE) {
+        if (e.key.keysym.sym == SDLK_BACKSPACE || e.key.keysym.sym == SDLK_ESCAPE) {
             on_maps = 1;
             on_map2 = 0;
         }
@@ -679,7 +686,7 @@ void mainmenu_event(int* y_pointer) {
     if(on_map3) {
         SDL_Event e;
         SDL_PollEvent(&e);
-        if (e.key.keysym.sym == SDLK_BACKSPACE) {
+        if (e.key.keysym.sym == SDLK_BACKSPACE || e.key.keysym.sym == SDLK_ESCAPE) {
             on_maps = 1;
             on_map3 = 0;
         }

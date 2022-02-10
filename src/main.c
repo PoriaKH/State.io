@@ -395,7 +395,13 @@ int shall_attack(map mps,int i,int j,int using_potion,int power_num,int who_is_u
     if(mps.tiles[i].team == 4)
         soldiers_sp = soldiers_speed_team4;
 
-    soldiers_sp = soldiers_sp * 89 / 0.07;
+#ifdef _WIN32
+    soldiers_sp = soldiers_sp * 120 / 2;
+#endif
+
+#ifdef linux
+    soldiers_sp = soldiers_sp * 87 / 0.07;
+#endif
 
     float delta_T = delta_R / soldiers_sp;
     if(!using_potion || (using_potion == 1 && power_num != 4)) {
@@ -424,7 +430,14 @@ int main() {
     }
     TTF_Init();
 
-    SDL_Window *sdlWindow = SDL_CreateWindow("Test_Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+#ifdef _WIN32
+    soldiers_speed_team1 = 2;
+    soldiers_speed_team2 = 2;
+    soldiers_speed_team3 = 2;
+    soldiers_speed_team4 = 2;
+#endif
+
+    SDL_Window *sdlWindow = SDL_CreateWindow("State.io by PoriaKH", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                              SCREEN_WIDTH,
                                              SCREEN_HEIGHT, SDL_WINDOW_OPENGL);
 
@@ -448,6 +461,9 @@ int main() {
 //create map
     map mps[NUM_OF_MAPS];
     for (int k = 0; k < NUM_OF_MAPS; k++) {
+        //loading page
+        draw_image_final(sdlRenderer,0,0,"../images/menu/loading.jpg",800,800);
+        SDL_RenderPresent(sdlRenderer);
         srand(time(NULL));
         int x_lines; //ofoghi
         int y_lines; //amoodi
@@ -543,9 +559,10 @@ int main() {
                     }
                 }
 
-////fixing the values
+//fixing the values
                 tile *c = &tls[counter];
                 fix(c);
+//
                 if (tls[counter].height >= min_height_of_tile && tls[counter].width >= min_width_of_tile) {
                     tile *c = &tls[counter];
                     second_check(c);

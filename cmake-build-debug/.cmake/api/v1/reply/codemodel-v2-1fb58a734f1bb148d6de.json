@@ -6,9 +6,10 @@
 			[
 				{
 					"build" : ".",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
 					"minimumCMakeVersion" : 
 					{
-						"string" : "3.15"
+						"string" : "3.21"
 					},
 					"projectIndex" : 0,
 					"source" : ".",
@@ -26,7 +27,7 @@
 					[
 						0
 					],
-					"name" : "myF",
+					"name" : "project_name",
 					"targetIndexes" : 
 					[
 						0
@@ -37,9 +38,9 @@
 			[
 				{
 					"directoryIndex" : 0,
-					"id" : "myF::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-myF-Debug-bf2c806473cddf39d697.json",
-					"name" : "myF",
+					"id" : "project_name::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-project_name-Debug-76df67528c0652da8b4d.json",
+					"name" : "project_name",
 					"projectIndex" : 0
 				}
 			]
@@ -48,12 +49,12 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/Users/PoriaKP/Desktop/State.io/cmake-build-debug",
-		"source" : "C:/Users/PoriaKP/Desktop/State.io"
+		"build" : "/home/mercy/Desktop/State.io/cmake-build-debug",
+		"source" : "/home/mercy/Desktop/State.io"
 	},
 	"version" : 
 	{
 		"major" : 2,
-		"minor" : 0
+		"minor" : 3
 	}
 }
