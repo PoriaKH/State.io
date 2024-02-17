@@ -20,3 +20,9 @@ Hope you enjoy the game :)
 
 ### Gameplay
 ![State io](https://github.com/PoriaKH/State.io/assets/94684621/4b8423f5-9a62-4626-896c-f7ada36b5d5c)
+
+
+https://github.com/PoriaKH/State.io/assets/94684621/25f20d57-abb2-4b82-a508-55685f9e3acf
+
+
+
