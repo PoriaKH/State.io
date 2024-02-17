@@ -19,4 +19,4 @@ A few kind of portions will appear randomly during the game , try to achieve the
 Hope you enjoy the game :)
 
 ### Gameplay
-https://github.com/PoriaKH/State.io/assets/94684621/4b16d1ff-8e2f-4345-af6f-059aa52977db
+![State io](https://github.com/PoriaKH/State.io/assets/94684621/4b8423f5-9a62-4626-896c-f7ada36b5d5c)
